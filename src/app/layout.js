@@ -1,10 +1,11 @@
+import Header from "@/components/custom/Header";
+import Footer from "@/components/custom/Footer";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Vectix AI",
@@ -13,12 +14,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${inter.variable} antialiased`}
+        >
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Toaster richColors />
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
