@@ -1,9 +1,10 @@
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import Header from "@/components/custom/Header";
 import Footer from "@/components/custom/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,14 @@ export default function RootLayout({ children }) {
           className={`${inter.variable} antialiased`}
         >
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="min-h-screen">{children}</main>
+          </ThemeProvider>
           <Toaster richColors />
           <Footer />
         </body>
