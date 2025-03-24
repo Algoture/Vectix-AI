@@ -1,5 +1,7 @@
 import Features from "@/components/custom/Features";
 import Hero from "@/components/custom/Hero";
+import HowItWorks from "@/components/custom/HowItWorks";
+import Statistics from "@/components/custom/Statistics";
 
 export default function Home() {
   return (
@@ -7,6 +9,8 @@ export default function Home() {
       <div className="grid-background min-h-screen"></div>
       <Hero />
       <Features />
+      <Statistics />
+      <HowItWorks />
     </div>
   );
 }

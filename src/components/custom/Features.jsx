@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { features } from "../../../data/features";
 const Features = () => {
   return (
-    <section className="w-full bg-background py-12 md:py-24 lg:py-32 ">
+    <section className="w-full bg-background py-12 md:py-24 lg:py-28 ">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl font-bold tracking-tighter text-center mb-12">
           Powerful Features for Your Career Growth

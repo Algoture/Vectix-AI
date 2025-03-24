@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { Logo } from "./Icons";
 import Link from "next/link";
 import Signed from "./Signed";
+import ModeToggle from "./Modes";
 
 export default function Header() {
   return (
@@ -31,6 +32,7 @@ export default function Header() {
             afterSignOutUrl="/"
           />
         </SignedIn>
+        <ModeToggle />
       </nav>
     </header>
   );

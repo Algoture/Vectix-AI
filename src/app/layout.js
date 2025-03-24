@@ -20,13 +20,13 @@ export default function RootLayout({ children }) {
         <body
           className={`${inter.variable} antialiased`}
         >
-          <Header />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
+            <Header />
             <main className="min-h-screen">{children}</main>
           </ThemeProvider>
           <Toaster richColors />
