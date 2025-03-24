@@ -8,7 +8,7 @@ import ModeToggle from "./Modes";
 export default function Header() {
   return (
     <header className="fixed top-4 w-full cen">
-      <nav className="bg-background/80 flex gap-5 backdrop-blur-md rounded-lg w-fit p-2">
+      <nav className="bg-background/80 dark:bg-accent/80 flex gap-5 backdrop-blur-md rounded-lg w-fit p-2">
         <Link href="/" className="cen">
           <Logo className="size-7 fill-primary" />
           <p>Vectix AI</p>

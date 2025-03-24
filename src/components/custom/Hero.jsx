@@ -6,7 +6,7 @@ const Hero = () => {
     <section className="w-full pt-28 md:pt-36 pb-10 min-h-screen">
       <div className="space-y-6 text-center">
         <div className="space-y-4 mx-auto">
-          <h1 className="gradient-title text-5xl md:text-7xl">
+          <h1 className="gradient-title text-5xl md:text-7xl dark:bg-gradient-to-b dark:from-gray-200 dark:via-gray-600 dark:to-gray-200 text-transparent bg-clip-text">
             Your Personal AI Coach
             <br />
             for Job Success
@@ -16,9 +16,12 @@ const Hero = () => {
             AI
           </p>
         </div>
-        <div >
+
+        <div>
           <Link href={"/"}>
-            <Button className="z-20" size={"lg"}>Unlock Success</Button>
+            <Button className="z-20" size={"lg"}>
+              Unlock Success
+            </Button>
           </Link>
         </div>
       </div>
