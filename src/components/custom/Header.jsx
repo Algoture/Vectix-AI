@@ -2,8 +2,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Button } from "../ui/button";
 import { Logo } from "./Icons";
 import Link from "next/link";
-import { LayoutDashboard } from "lucide-react";
-import DropDown from "./DropDown";
+import Signed from "./Signed";
 
 export default function Header() {
   return (
@@ -13,15 +12,7 @@ export default function Header() {
           <Logo className="size-7 fill-primary" />
           <p>Vectix AI</p>
         </Link>
-        <SignedIn>
-          <Link href={""}>
-            <Button>
-              <LayoutDashboard className="size-4" />
-              <span className="hidden md:block">Insights</span>
-            </Button>
-          </Link>
-          <DropDown />
-        </SignedIn>
+        <Signed />
         <SignedOut>
           <SignInButton>
             <Button variant="outline">Sign In</Button>

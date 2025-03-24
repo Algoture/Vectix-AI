@@ -111,8 +111,38 @@
   border: 1.5px solid red;
 }
 
-.cen{
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.cen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, #80808012 1px, transparent 1px),
+    linear-gradient(to bottom, #80808012 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+}
+.grid-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
+}
+@utility gradient {
+  @apply bg-gradient-to-b from-gray-800 via-gray-800 to-gray-600;
+}
+@layer utilities {
+  .gradient-title {
+    @apply gradient font-extrabold tracking-tighter text-transparent bg-clip-text pb-2 pr-2;
+  }
 }
