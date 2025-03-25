@@ -1,5 +1,15 @@
-const onboardingPage = () => {
-  return <div></div>;
+import { getOnboardingStatus } from "../../../../actions/user";
+import { redirect } from "next/navigation";
+import OnboardingForm from "./_components/OnboardingForm";
+
+const onboardingPage = async () => {
+  const { isOnboarded } = await getOnboardingStatus();
+  if (isOnboarded) redirect("/dashboard");
+  return (
+    <div>
+      <OnboardingForm />
+    </div>
+  );
 };
 
 export default onboardingPage;

@@ -1,13 +1,6 @@
 import { SignedIn } from "@clerk/nextjs";
-import { Button } from "../ui/button";
 import Link from "next/link";
-import {
-  FileText,
-  GraduationCap,
-  LayoutDashboard,
-  PenBox,
-  StarsIcon,
-} from "lucide-react";
+import { FileText, GraduationCap, PenBox, StarsIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,12 +11,6 @@ import {
 const Signed = () => {
   return (
     <SignedIn>
-      <Link href={""}>
-        <Button>
-          <LayoutDashboard className="size-4" />
-          <span className="hidden md:block">Insights</span>
-        </Button>
-      </Link>
       <DropdownMenu>
         <DropdownMenuTrigger className="cursor-pointer cen gap-1 h-9 px-4 py-2 has-[>svg]:px-3 bg-primary text-white rounded-md">
           <StarsIcon className="size-4" />
