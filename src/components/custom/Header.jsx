@@ -4,8 +4,10 @@ import { Logo } from "./Icons";
 import Link from "next/link";
 import Signed from "./Signed";
 import ModeToggle from "./Modes";
+import { checkUser } from "@/lib/checkUser";
 
-export default function Header() {
+export default async function Header() {
+  await checkUser();
   return (
     <header className="fixed top-4 w-full cen">
       <nav className="bg-background/80 dark:bg-accent/80 flex gap-5 backdrop-blur-md rounded-lg w-fit p-2">
