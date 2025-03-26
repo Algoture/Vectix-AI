@@ -12,7 +12,7 @@ export async function generateQuiz() {
     const user = await db.user.findUnique({ where: { clerkUserId: userId } });
     if (!user) throw new Error("User not found");
     const prompt = `
-    Generate ${process.env.NUMBER_OF_QUESTIONS} technical interview questions for a ${user.industry
+    Generate ${process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS} technical interview questions for a ${user.industry
         } professional${user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""
         }.
     
