@@ -18,7 +18,7 @@ const Hero = () => {
         </div>
 
         <div>
-          <Link href={"/"}>
+          <Link href={"/dashboard"}>
             <Button className="z-20" size={"lg"}>
               Unlock Success
             </Button>
