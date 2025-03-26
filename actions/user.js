@@ -28,7 +28,7 @@ export async function updateUser(data) {
                 timeout: 1000
             }
         )
-        return result.user;
+        return {success:true,...result};
     } catch (error) {
         console.log(error);
         throw new Error("Failed to update profile");
