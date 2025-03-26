@@ -22,7 +22,7 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed top-4 w-full transition-all duration-300 z-50 ${
+      className={`fixed top-5 w-full transition-all duration-300 z-50 ${
         isScrolled ? "h-12" : "h-24"
       }`}
     >
@@ -32,7 +32,7 @@ export default function Header() {
         }`}
       >
         <Link href="/" className="cen">
-          <Logo className={`size-${isScrolled ? "6" : "9"} fill-primary`} />
+          <Logo className={`size-${isScrolled ? "7" : "10"} fill-primary`} />
           <p className={`${isScrolled ? "text-sm text-nowrap" : "text-base"}`}>Vectix AI</p>
         </Link>
 
