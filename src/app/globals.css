@@ -42,7 +42,10 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+body{
+  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
 
+}
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(224, 71.4%, 4.1%);
@@ -117,40 +120,8 @@
   align-items: center;
 }
 
-.grid-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-size: 50px 50px;
-  pointer-events: none;
-  z-index: -1;
-}
 
 
-@media (prefers-color-scheme: dark) {
-  .grid-background {
-    background-image: linear-gradient(to right, #5050501c 1px, transparent 1px),
-      linear-gradient(to bottom, #5050501c 1px, transparent 1px);
-  }
-}
-
-.grid-background::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
-}
-
-@media (prefers-color-scheme: dark) {
-  .grid-background::before {
-    background: radial-gradient(circle, transparent, rgba(74, 74, 74, 0.324));
-  }
-}
 @utility gradient {
   @apply bg-gradient-to-b from-gray-900 via-gray-900 to-gray-700;
 }

@@ -14,7 +14,7 @@ import ModeToggle from "./Modes";
 export default function Header() {
   return (
     <div className="relative">
-      <div className="fixed top-5 z-50 flex w-full justify-center">
+      <div className="fixed top-5 z-20 flex w-full justify-center">
         <nav className="bg-background/60 w-fit shadow-sm dark:border-gray-700 border border-border gap-5 backdrop-blur-md p-2  flex items-center rounded-md">
           <ul className="flex gap-2 items-center cursor-pointer">
             <li>
@@ -37,7 +37,7 @@ export default function Header() {
         </nav>
       </div>
 
-      <div className="fixed flex gap-2 top-6 right-5 z-50">
+      <div className="fixed flex gap-2 top-6 right-5 z-20">
         <Signed />
         <SignedIn>
           <UserButton afterSignOutUrl="/" />

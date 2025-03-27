@@ -19,7 +19,7 @@ const Hero = () => {
 
         <div>
           <Link href={"/onboarding"}>
-            <Button className="z-20" size={"lg"}>
+            <Button className="z-30" size={"lg"}>
               Unlock Success
             </Button>
           </Link>
