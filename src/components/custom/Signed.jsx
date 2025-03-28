@@ -1,6 +1,6 @@
 import { SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
-import { FileText, GraduationCap, PenBox, StarsIcon } from "lucide-react";
+import { FileText, GraduationCap, PenBox, StarsIcon, BotIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +37,7 @@ const Signed = () => {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/voice-interview" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
+              <BotIcon className="h-4 w-4" />
               AI Voice Interview 
             </Link>
           </DropdownMenuItem>
