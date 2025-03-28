@@ -18,7 +18,7 @@ const PricingTable = () => {
   return (
     <div className="flex flex-col mt-20 items-center p-4 bg-gray-50 dark:bg-background">
       <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">
-        Vectix AI Pricing Plans
+        Our Pricing
       </h2>
       <p className="text-muted-foreground mb-2  dark:text-gray-300">
         Choose a plan that suits your needs. Pay monthly or annually and save!
@@ -45,7 +45,7 @@ const PricingTable = () => {
             className={`border cursor-pointer rounded-lg shadow-sm p-3 bg-white dark:bg-background hover:shadow-xl transition-shadow ${
               plan.name === "Pro"
                 ? "border-2 border-primary "
-                : "border-gray-200 "
+                : "border-gray-200 dark:border-neutral-700 "
             }`}>
             <CardHeader className={"-mb-2"}>
               <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">
@@ -59,16 +59,13 @@ const PricingTable = () => {
             </CardHeader>
 
             <CardContent>
-              <p className="text-muted-foreground mb-2  dark:text-gray-300">
-                {plan.description}
-              </p>
-              <div className="text-4xl font-bold text-primary mb-3">
+              <div className="text-5xl font-bold dark:text-white/90 text-black/80 mb-3">
                 ${isAnnual ? plan.annual : plan.monthly}
                 <span className="text-base font-normal text-gray-500 dark:text-gray-400">
                   /{isAnnual ? "yr" : "mo"}
                 </span>
               </div>
-              <ul className="text-muted-foreground mb-4  dark:text-gray-300">
+              <ul className="text-muted-foreground my-4 dark:text-gray-300">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-center gap-1">
                     <TickIcon className="size-5 text-primary dark:text-primary" />
@@ -79,14 +76,7 @@ const PricingTable = () => {
             </CardContent>
 
             <CardFooter>
-              <Button
-                className={`w-full bg-primary text-white rounded-lg py-3 ${
-                  plan.name === "Pro"
-                    ? "hover:bg-primary-dark"
-                    : "hover:bg-primary-dark"
-                }`}>
-                Choose {plan.name}
-              </Button>
+              <Button className="w-full text-white ">Choose {plan.name}</Button>
             </CardFooter>
           </Card>
         ))}

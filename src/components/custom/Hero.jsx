@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 
 const Hero = () => {
   return (
-    <section className="w-full pt-28 md:pt-36 pb-10 min-h-screen">
+    <section className="w-full gradientBg pt-28 md:pt-36 pb-10 min-h-screen">
       <div className="space-y-6 text-center">
         <div className="space-y-4 mx-auto">
           <h1 className="gradient-title text-5xl md:text-7xl dark:bg-gradient-to-b dark:from-gray-200 dark:via-gray-400 dark:to-gray-200 text-transparent bg-clip-text">

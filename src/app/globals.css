@@ -42,10 +42,11 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
-body{
-  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
 
+.gradientBg {
+  background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
 }
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(224, 71.4%, 4.1%);
@@ -119,8 +120,6 @@ body{
   justify-content: center;
   align-items: center;
 }
-
-
 
 @utility gradient {
   @apply bg-gradient-to-b from-gray-900 via-gray-900 to-gray-700;
