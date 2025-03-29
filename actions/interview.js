@@ -2,7 +2,7 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
 });
@@ -128,4 +128,27 @@ export async function getAssessments() {
         console.error("Error fetching assessments:", error);
         throw new Error("Failed to fetch assessments");
     }
+}
+
+export async function voiceInterviewQue(jobPos,jobDesc,jobExp) {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+    const user = await db.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) throw new Error("User not found");
+    console.log( jobPos,jobDesc, jobExp);
+    const prompt = `
+    Job position: ${jobPos}, Job Description: ${jobDesc}, Years of Experience : ${jobExp} , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
+  `;
+    try {
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const text = response.text();
+        const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
+        const quiz = JSON.parse(cleanedText);
+        return cleanedText;
+    } catch (error) {
+        console.error("Error generating quiz:", error);
+        throw new Error("Failed to generate quiz questions");
+    }
+    
 }

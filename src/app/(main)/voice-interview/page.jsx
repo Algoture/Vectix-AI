@@ -3,7 +3,8 @@ import { Divide } from 'lucide-react'
 import React, { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { chatSession } from './utils/GeminiAIModel'
+import { voiceInterviewQue } from '../../../../actions/interview'
+import useFetch from '../../../../hooks/use-fetch'
 
 import {
   Dialog,
@@ -24,15 +25,19 @@ function page() {
     const [loading,setLoading]=useState(false);
     const [jsonResponse,setJsonResponse]=useState([]);
 
+
     const onSubmit=async(e)=>{
       e.preventDefault()
-      console.log(jobDesc, jobPosition, jobExp);
+      // console.log( jobPosition,jobDesc, jobExp);
       
-      const InputPrompt="Job position: "+jobPosition+", Job Description: "+jobDesc+", Years of Experience : "+jobExp+" , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON"
+      const data=await voiceInterviewQue(jobPosition, jobDesc, jobExp);
+      console.log(data);
+      
+      // const InputPrompt="Job position: "+jobPosition+", Job Description: "+jobDesc+", Years of Experience : "+jobExp+" , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON"
 
-      const result=await chatSession.sendMessage(InputPrompt);
+      // const result=await chatSession.sendMessage(InputPrompt);
  
-       console.log(result.response.text());
+      //  console.log(result.response.text());
     }
  
 
@@ -95,3 +100,7 @@ function page() {
 }
 
 export default page
+
+
+
+
