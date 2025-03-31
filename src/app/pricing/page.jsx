@@ -1,4 +1,3 @@
-import { pricingPlans } from "../../../data/pricingplans";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,6 +8,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { TickIcon } from "@/components/custom/Icons";
+import { pricingPlans } from "@/data/pricingplans";
 
 const PricingTable = () => {
   return (

@@ -1,4 +1,4 @@
-import { steps } from "../../../data/howitworks";
+import { steps } from "@/data/howitworks";
 function HowItWorks() {
   return (
     <div className=" py-10 sm:py-20">
