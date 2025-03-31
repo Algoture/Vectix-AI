@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { generateQuiz, saveQuizResult } from "../../../../../actions/interview";
 import QuizResult from "./quiz-result";
-import useFetch from "../../../../../hooks/use-fetch";
 import { BarLoader } from "react-spinners";
+import { generateQuiz, saveQuizResult } from "@/actions/interview";
+import useFetch from "@/hooks/use-fetch";
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
