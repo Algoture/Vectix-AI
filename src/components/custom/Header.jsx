@@ -1,11 +1,16 @@
+"use client";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { Logo } from "./Icons";
 import Link from "next/link";
 import Signed from "./Signed";
 import ModeToggle from "./Modes";
+import clsx from "clsx";
 
 export default function Header() {
+  const pathname = usePathname();
+  console.log(pathname);
   return (
     <div className="relative">
       <div className="fixed top-5 z-20 flex w-full justify-center">
@@ -22,12 +27,21 @@ export default function Header() {
             <li className="flex gap-4">
               <Link
                 href={"/pricing"}
-                className="text-neutral-800 dark:text-neutral-200">
+                className={clsx(
+                  pathname === "/pricing"
+                    ? "dark:text-white "
+                    : "text-muted-foreground"
+                )}>
                 Pricing
               </Link>
               <Link
                 href={"/support"}
-                className="text-neutral-800 dark:text-neutral-200 -mr-2">
+                className={clsx(
+                  "-mr-2",
+                  pathname === "/support"
+                    ? "dark:text-white "
+                    : "text-muted-foreground"
+                )}>
                 Support
               </Link>
             </li>
