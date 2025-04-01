@@ -1,0 +1,43 @@
+export const pricingPlans = [
+    {
+        name: "Free",
+        id: "tier-free",
+        price: "$0",
+        description: "Perfect for trying out Vectix AI.",
+        features: ["3 AI mock interviews per month", "Basic resume builder", "1 cover letter per month", "Email support"],
+        cta: "Start Free",
+        mostPopular: false,
+    },
+    {
+        name: "Pro",
+        id: "tier-pro",
+        price: "$19",
+        description: "For serious job seekers.",
+        features: [
+            "Unlimited AI mock interviews",
+            "Advanced resume builder",
+            "Unlimited cover letters",
+            "Live AI voice interviews",
+            "Interview performance analytics",
+            "Priority support",
+        ],
+        cta: "Get Pro",
+        mostPopular: true,
+    },
+    {
+        name: "Enterprise",
+        id: "tier-enterprise",
+        price: "Custom",
+        description: "For teams and organizations.",
+        features: [
+            "Everything in Pro",
+            "Custom interview scenarios",
+            "Team management dashboard",
+            "Bulk user management",
+            "Custom branding",
+            "Dedicated account manager",
+        ],
+        cta: "Contact Sales",
+        mostPopular: false,
+    },
+]

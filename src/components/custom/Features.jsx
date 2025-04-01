@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { features } from "../../../data/features";
+import { features } from "@/data/features";
 const Features = () => {
   return (
     <section className="w-full bg-background py-12 md:py-24 lg:py-28 ">
@@ -8,7 +8,7 @@ const Features = () => {
           Powerful Features for Your Career Growth
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-          {features.map((feature) => (
+          {features.slice(0, 4).map((feature) => (
             <Card
               key={feature.title}
               className="border-2 hover:border-primary transition-colors duration-300">

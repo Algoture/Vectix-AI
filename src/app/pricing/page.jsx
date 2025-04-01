@@ -1,6 +1,3 @@
-"use client";
-import { useState } from "react";
-import { pricingPlans } from "../../../data/pricingplans";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,78 +5,73 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
+  CardDescription,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { TickIcon } from "@/components/custom/Icons";
+import { pricingPlans } from "@/data/pricingplans";
 
 const PricingTable = () => {
-  const [isAnnual, setIsAnnual] = useState(false);
-
   return (
-    <div className="flex flex-col mt-20 items-center p-4 bg-gray-50 dark:bg-background">
-      <h2 className="text-3xl font-bold mb-4 text-gray-800 dark:text-white">
-        Our Pricing
-      </h2>
-      <p className="text-muted-foreground mb-2  dark:text-gray-300">
-        Choose a plan that suits your needs. Pay monthly or annually and save!
-      </p>
-
-      <div className="flex items-center mb-4">
-        <span className="text-muted-foreground mr-2  dark:text-gray-300">
-          Monthly
-        </span>
-        <Switch
-          checked={isAnnual}
-          onCheckedChange={() => setIsAnnual(!isAnnual)}
-          className="peer cursor-pointer"
-        />
-        <span className="text-muted-foreground ml-2  dark:text-gray-300">
-          Annual
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-screen-xl">
-        {pricingPlans.map((plan, idx) => (
-          <Card
-            key={idx}
-            className={`border cursor-pointer rounded-lg shadow-sm p-3 bg-white dark:bg-background hover:shadow-xl transition-shadow ${
-              plan.name === "Pro"
-                ? "border-2 border-primary "
-                : "border-gray-200 dark:border-neutral-700 "
-            }`}>
-            <CardHeader className={"-mb-2"}>
-              <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">
-                {plan.name}
-                {plan.name === "Pro" && (
-                  <span className="bg-primary text-white text-xs font-semibold px-2 py-1 rounded-full ml-2">
-                    Popular
+    <div className=" py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="mt-2 text-3xl font-bold tracking-tight  sm:text-4xl">
+            Plans for Every Stage of Your Career
+          </p>
+          <p className="mt-4 text-lg leading-8 text-muted-foreground">
+            Choose the plan that works best for your needs, with no hidden fees.
+          </p>
+        </div>
+        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-3">
+          {pricingPlans.map((tier) => (
+            <Card
+              key={tier.id}
+              className={`${
+                tier.mostPopular ? "relative z-10 scale-105 shadow-md" : ""
+              } flex flex-col`}>
+              {tier.mostPopular && (
+                <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-primary px-3 py-1 text-center text-xs font-medium text-white">
+                  Most Popular
+                </div>
+              )}
+              <CardHeader>
+                <CardTitle className="text-lg">{tier.name}</CardTitle>
+                <div className="mt-2 flex items-baseline ">
+                  <span className="text-4xl font-bold tracking-tight">
+                    {tier.price}
                   </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent>
-              <div className="text-5xl font-bold dark:text-white/90 text-black/80 mb-3">
-                ${isAnnual ? plan.annual : plan.monthly}
-                <span className="text-base font-normal text-gray-500 dark:text-gray-400">
-                  /{isAnnual ? "yr" : "mo"}
-                </span>
-              </div>
-              <ul className="text-muted-foreground my-4 dark:text-gray-300">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-1">
-                    <TickIcon className="size-5 text-primary dark:text-primary" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-
-            <CardFooter>
-              <Button className="w-full text-white ">Choose {plan.name}</Button>
-            </CardFooter>
-          </Card>
-        ))}
+                  {tier.price !== "Custom" && (
+                    <span className="ml-1 text-sm font-semibold leading-6 ">
+                      /month
+                    </span>
+                  )}
+                </div>
+                <CardDescription className="mt-2">
+                  {tier.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-1">
+                <ul className="mt-2 space-y-3">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex">
+                      <TickIcon className="size-5 text-primary dark:text-primary" />
+                      <span className="ml-2 text-sm text-accent-foreground/70">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  variant={tier.mostPopular ? "default" : "outline"}>
+                  {tier.cta}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
