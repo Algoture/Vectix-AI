@@ -23,7 +23,10 @@ import useFetch from "@/hooks/use-fetch";
 import { useUser } from "@clerk/nextjs";
 import { entriesToMarkdown } from "@/app/lib/helper";
 import { resumeSchema } from "@/app/lib/schema";
-import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
+import dynamic from "next/dynamic";
+
+// Dynamically import html2pdf.js to ensure it's used only on the client-side
+const html2pdf = dynamic(() => import("html2pdf.js"), { ssr: false });
 
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState("edit");
