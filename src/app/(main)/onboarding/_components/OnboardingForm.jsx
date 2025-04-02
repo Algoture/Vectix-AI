@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
 import {
   Card,
   CardContent,
@@ -26,78 +25,109 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { onboardingSchema } from "@/app/lib/schema";
-import useFetch from "@/hooks/use-fetch";
 import { updateUser } from "@/actions/user";
 
-const OnboardingForm = ({ industries }) => {
+const OnboardingForm = ({ industries = [], initialData = null, onSuccess }) => {
   const router = useRouter();
-  const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState(null);
 
-  const {
-    loading: updateLoading,
-    fn: updateUserFn,
-    data: updateResult,
-  } = useFetch(updateUser);
+  const [industry, setIndustry] = useState("");
+  const [subIndustry, setSubIndustry] = useState("");
+  const [experience, setExperience] = useState("");
+  const [skills, setSkills] = useState("");
+  const [bio, setBio] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm({
-    resolver: zodResolver(onboardingSchema),
-  });
-
-  const onSubmit = async (values) => {
-    try {
-      const formattedIndustry = `${values.industry}-${values.subIndustry
-        .toLowerCase()
-        .replace(/ /g, "-")}`;
-
-      await updateUserFn({
-        ...values,
-        industry: formattedIndustry,
-      });
-    } catch (error) {
-      console.error("Onboarding error:", error);
-    }
-  };
+  const [selectedIndustryObject, setSelectedIndustryObject] = useState(null);
 
   useEffect(() => {
-    if (updateResult?.success && !updateLoading) {
-      toast.success("Profile completed successfully!");
-      router.push("/dashboard");
-      router.refresh();
+    if (initialData) {
+      const initialIndustryName = initialData.industry || "";
+      const initialSubIndustryName = initialData.subIndustry || "";
+      setIndustry(initialIndustryName);
+      setSubIndustry(initialSubIndustryName);
+      setExperience(
+        initialData.experience != null ? String(initialData.experience) : ""
+      );
+      setSkills(
+        Array.isArray(initialData.skills) ? initialData.skills.join(", ") : ""
+      );
+      setBio(initialData.bio || "");
+      const matchingIndustry = industries.find(
+        (ind) => ind.name === initialIndustryName
+      );
+      setSelectedIndustryObject(matchingIndustry || null);
     }
-  }, [updateResult, updateLoading]);
+  }, [initialData, industries]);
 
-  const watchIndustry = watch("industry");
+  const handleIndustryChange = (value) => {
+    setIndustry(value);
+    const selectedObj = industries.find((ind) => ind.name === value);
+    setSelectedIndustryObject(selectedObj || null);
+    setSubIndustry("");
+  };
+
+  const handleSubIndustryChange = (value) => {
+    setSubIndustry(value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (!industry || !subIndustry || experience === "" || !skills) {
+      setError(
+        "Please fill in all required fields (Industry, Specialization, Experience, Skills)."
+      );
+      return;
+    }
+
+    const formData = {
+      industry,
+      subIndustry,
+      experience: parseInt(experience, 10),
+      skills: skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s),
+      bio,
+    };
+
+    startTransition(async () => {
+      const result = await updateUser(formData);
+      if (result.success) {
+        toast.success("Profile updated successfully!");
+        if (onSuccess) {
+          onSuccess(result.user);
+        } else {
+          router.push("/dashboard");
+        }
+      } else {
+        console.error("Onboarding failed:", result.message);
+        setError(result.message || "An error occurred while saving.");
+        toast.error(result.message || "Failed to update profile.");
+      }
+    });
+  };
 
   return (
     <div className="flex items-center justify-center bg-background">
       <Card className="w-full max-w-lg mt-10 mx-2">
         <CardHeader>
-          <CardTitle className="gradient-title text-4xl dark:bg-gradient-to-b dark:from-gray-200 dark:via-gray-300 dark:to-gray-200 text-transparent bg-clip-text">
+          <CardTitle className="text-2xl md:text-3xl font-semibold">
             Complete Your Profile
           </CardTitle>
           <CardDescription>
-            Select your industry to get started with your profile.
+            Provide your details to personalize your experience.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="industry">Industry</Label>
-              <Select
-                onValueChange={(value) => {
-                  setValue("industry", value);
-                  setSelectedIndustry(
-                    industries.find((ind) => ind.id === value)
-                  );
-                  setValue("subIndustry", "");
-                }}>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              {" "}
+              <Label htmlFor="industry">
+                Industry <span className="text-red-500">*</span>
+              </Label>
+              <Select value={industry} onValueChange={handleIndustryChange}>
                 <SelectTrigger id="industry">
                   <SelectValue placeholder="Select an industry" />
                 </SelectTrigger>
@@ -105,32 +135,31 @@ const OnboardingForm = ({ industries }) => {
                   <SelectGroup>
                     <SelectLabel>Industries</SelectLabel>
                     {industries.map((ind) => (
-                      <SelectItem key={ind.id} value={ind.id}>
+                      <SelectItem key={ind.id || ind.name} value={ind.name}>
                         {ind.name}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {errors.industry && (
-                <p className="text-sm text-red-500">
-                  {errors.industry.message}
-                </p>
-              )}
             </div>
-
-            {watchIndustry && (
-              <div className="space-y-2">
-                <Label htmlFor="subIndustry">Specialization</Label>
+            {industry && selectedIndustryObject && (
+              <div className="space-y-1.5">
+                <Label htmlFor="subIndustry">
+                  Specialization <span className="text-red-500">*</span>
+                </Label>
                 <Select
-                  onValueChange={(value) => setValue("subIndustry", value)}>
+                  value={subIndustry}
+                  onValueChange={handleSubIndustryChange}
+                  disabled={!selectedIndustryObject?.subIndustries?.length} // Disable if no sub-industries
+                >
                   <SelectTrigger id="subIndustry">
                     <SelectValue placeholder="Select your specialization" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Specializations</SelectLabel>
-                      {selectedIndustry?.subIndustries.map((sub) => (
+                      {selectedIndustryObject?.subIndustries?.map((sub) => (
                         <SelectItem key={sub} value={sub}>
                           {sub}
                         </SelectItem>
@@ -138,67 +167,59 @@ const OnboardingForm = ({ industries }) => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {errors.subIndustry && (
-                  <p className="text-sm text-red-500">
-                    {errors.subIndustry.message}
-                  </p>
-                )}
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label htmlFor="experience">Years of Experience</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="experience">
+                Years of Experience <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="experience"
                 type="number"
                 min="0"
                 max="50"
-                placeholder="Enter years of experience"
-                {...register("experience")}
+                placeholder="e.g., 5"
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                required
               />
-              {errors.experience && (
-                <p className="text-sm text-red-500">
-                  {errors.experience.message}
-                </p>
-              )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="skills">Skills</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="skills">
+                Skills <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="skills"
                 placeholder="e.g., Python, JavaScript, Project Management"
-                {...register("skills")}
+                value={skills}
+                onChange={(e) => setSkills(e.target.value)}
+                required
               />
               <p className="text-sm text-muted-foreground">
                 Separate multiple skills with commas
               </p>
-              {errors.skills && (
-                <p className="text-sm text-red-500">{errors.skills.message}</p>
-              )}
             </div>
-
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="bio">Professional Bio</Label>
               <Textarea
                 id="bio"
                 placeholder="Tell us about your professional background..."
-                className="h-32"
-                {...register("bio")}
+                className="h-28"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
               />
-              {errors.bio && (
-                <p className="text-sm text-red-500">{errors.bio.message}</p>
-              )}
             </div>
-
-            <Button type="submit" className="w-full" disabled={updateLoading}>
-              {updateLoading ? (
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...
                 </>
               ) : (
-                "Complete Profile"
+                "Save Profile"
               )}
             </Button>
           </form>

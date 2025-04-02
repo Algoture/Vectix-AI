@@ -1,0 +1,51 @@
+import mongoose from "mongoose";
+const { Schema } = mongoose;
+
+const UserSchema = new Schema({
+    clerkUserId: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    name: { type: String },
+    industry: { type: String },
+    bio: { type: String },
+    experience: { type: Number },
+    skills: [{ type: String }],
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+const AssessmentSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    quizScore: { type: Number, required: true },
+    questions: [{ type: Schema.Types.Mixed }],
+    category: { type: String, required: true },
+    improvementTip: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+const ResumeSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    content: { type: String, required: true },
+    atsScore: { type: Number },
+    feedback: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+const CoverLetterSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    content: { type: String, required: true },
+    jobDescription: { type: String },
+    companyName: { type: String, required: true },
+    jobTitle: { type: String, required: true },
+    status: { type: String, default: "draft" },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+});
+
+const User = mongoose.models?.User || mongoose.model("User", UserSchema);
+const Assessment = mongoose.models?.Assessment || mongoose.model("Assessment", AssessmentSchema);
+const Resume = mongoose.models?.Resume || mongoose.model("Resume", ResumeSchema);
+const CoverLetter = mongoose.models?.CoverLetter || mongoose.model("CoverLetter", CoverLetterSchema);
+
+export { User, Assessment, Resume, CoverLetter };

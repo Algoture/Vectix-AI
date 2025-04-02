@@ -1,4 +1,3 @@
-import { ThemeProvider } from "@/components/ui/theme-provider";
 import Header from "@/components/custom/Header";
 import Footer from "@/components/custom/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -20,15 +19,8 @@ export default function RootLayout({ children }) {
         <body
           className={`${inter.variable} antialiased`}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            <main className="">{children}</main>
-          </ThemeProvider>
+          <Header />
+          <main className="">{children}</main>
           <Toaster richColors />
           <Footer />
         </body>

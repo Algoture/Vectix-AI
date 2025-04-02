@@ -5,21 +5,19 @@ import { Button } from "../ui/button";
 import { Logo } from "./Icons";
 import Link from "next/link";
 import Signed from "./Signed";
-import ModeToggle from "./Modes";
 import clsx from "clsx";
 
 export default function Header() {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <div className="relative">
       <div className="fixed top-5 z-20 flex w-full justify-center">
-        <nav className="bg-background/50  w-fit  dark:border-gray-700 border border-border gap-5 backdrop-blur-xl p-2  flex items-center rounded-md">
+        <nav className="bg-background/50  w-fit  border-gray-700 border gap-5 backdrop-blur-xl p-2  flex items-center rounded-md">
           <ul className="flex gap-20 items-center cursor-pointer">
             <li>
               <Link href="/" className="flex items-center pl-1">
                 <Logo className="fill-primary dark:fill-white size-6 rotate-180" />
-                <p className="text-black dark:text-white font-semibold">
+                <p className=" font-semibold">
                   Vectix AI
                 </p>
               </Link>
@@ -37,7 +35,6 @@ export default function Header() {
               <Link
                 href={"/support"}
                 className={clsx(
-                  "-mr-2",
                   pathname === "/support"
                     ? "dark:text-white "
                     : "text-muted-foreground"
@@ -46,10 +43,6 @@ export default function Header() {
               </Link>
             </li>
           </ul>
-
-          <div className="flex gap-2 items-center">
-            <ModeToggle />
-          </div>
         </nav>
       </div>
 
