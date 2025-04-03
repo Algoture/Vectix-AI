@@ -10,13 +10,12 @@ export async function updateUser(data) {
         if (!success) {
             return { success: false, message: error };
         }
-        const { industry, subIndustry, bio, experience, skills } = data;
-        if (!industry || !subIndustry || experience == null || !skills) {
-            throw new Error('Industry, Specialization, Experience, and Skills are required fields.');
+        const { specialization, bio, experience, skills } = data;
+        if (!specialization || experience == null || !skills) {
+            throw new Error('Specialization, Experience, and Skills are required fields.');
         }
         const updateData = {
-            industry: industry,
-            subIndustry: subIndustry,
+            specialization: specialization,
             bio: bio,
             experience: Number.isNaN(parseInt(experience, 10)) ? null : parseInt(experience, 10),
             skills: typeof skills === 'string' ? skills.split(',').map(s => s.trim()).filter(s => s) : (Array.isArray(skills) ? skills : []),
@@ -52,7 +51,7 @@ export async function seedUser() {
                 clerkUserId: clerkUser.id,
                 email: emailId || "",
                 name: clerkUser.firstName || "",
-                industry: "",
+                specialization: "",
                 bio: "",
                 experience: 0,
                 skills: [],

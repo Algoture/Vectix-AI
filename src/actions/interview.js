@@ -94,12 +94,11 @@ export async function getAssessments() {
     }
 }
 
-export async function voiceInterviewQue(jobPos,jobDesc,jobExp) {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-    const user = await db.user.findUnique({ where: { clerkUserId: userId } });
-    if (!user) throw new Error("User not found");
-    console.log( jobPos,jobDesc, jobExp);
+export async function voiceInterviewQue(jobPos, jobDesc, jobExp) {
+    const { success, error } = await getAuthenticatedUser();
+    if (!success) {
+        return { error };
+    }
     const prompt = `
     Job position: ${jobPos}, Job Description: ${jobDesc}, Years of Experience : ${jobExp} , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
   `;
@@ -110,9 +109,9 @@ export async function voiceInterviewQue(jobPos,jobDesc,jobExp) {
         const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
         const quiz = JSON.parse(cleanedText);
         return cleanedText;
-    } catch (error) {
-        console.error("Error generating quiz:", error);
-        throw new Error("Failed to generate quiz questions");
+    } catch (err) {
+        console.error("Error generating voice interview questions", err);
+        return { error: "Failed to generate voice interview questions" + err.message };
     }
-    
+
 }

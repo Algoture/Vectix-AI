@@ -19,9 +19,3 @@ export async function getAuthenticatedUser() {
         return { success: false, error: "Server error: " + err.message };
     }
 }
-export async function getOnboardingStatus() {
-    "use server";
-    const { success, user, error } = await getAuthenticatedUser();
-    if (!success) return { isOnboarded: false, error };
-    return { isOnboarded: Boolean(user?.industry) };
-}

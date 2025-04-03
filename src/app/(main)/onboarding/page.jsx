@@ -1,12 +1,11 @@
-import { getOnboardingStatus } from "@/actions/auth";
+import { getAuthenticatedUser } from "@/actions/auth";
 import OnboardingForm from "./_components/OnboardingForm";
 import { getUserData, seedUser } from "@/actions/user";
-import { industries } from "@/data/industries";
 import { redirect } from "next/navigation";
 
 export default async function OnboardingPage() {
-  const { isOnboarded } = await getOnboardingStatus();
-  if (isOnboarded) {
+  const { success } = await getAuthenticatedUser();
+  if (success) {
     redirect("/dashboard");
   }
 
@@ -21,7 +20,11 @@ export default async function OnboardingPage() {
   const userData = await getUserData();
   return (
     <div className="-mt-10">
-      <OnboardingForm industries={industries} initialData={userData} />
+      <OnboardingForm
+        isEditing={false}
+        route={"/dashboard"}
+        initialData={userData}
+      />
     </div>
   );
 }
