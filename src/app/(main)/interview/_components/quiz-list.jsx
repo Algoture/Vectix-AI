@@ -46,7 +46,7 @@ export default function QuizList({ assessments }) {
             {assessments?.map((assessment, i) => (
               <Card
                 key={assessment._id}
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                className="cursor-pointer"
                 onClick={() => setSelectedQuiz(assessment)}>
                 <CardHeader>
                   <CardTitle className="gradient-title  text-transparent bg-clip-text text-2xl">
