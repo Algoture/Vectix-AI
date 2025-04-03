@@ -54,7 +54,7 @@ const PricingTable = () => {
                 <ul className="mt-2 space-y-3">
                   {tier.features.map((feature) => (
                     <li key={feature} className="flex">
-                      <TickIcon className="size-5 text-primary dark:text-primary" />
+                      <TickIcon className="size-5 text-primary" />
                       <span className="ml-2 text-sm text-accent-foreground/70">
                         {feature}
                       </span>

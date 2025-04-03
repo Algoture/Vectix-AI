@@ -1,4 +1,4 @@
-import { getOnboardingStatus } from "@/actions/user";
+import { getOnboardingStatus } from "@/actions/auth";
 import { redirect } from "next/navigation";
 
 const DashboardPage = async () => {

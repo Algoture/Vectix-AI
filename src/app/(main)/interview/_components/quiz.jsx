@@ -16,8 +16,10 @@ import QuizResult from "./quiz-result";
 import { BarLoader } from "react-spinners";
 import { generateQuiz, saveQuizResult } from "@/actions/interview";
 import useFetch from "@/hooks/use-fetch";
+import { useRouter } from "next/navigation";
 
 export default function Quiz() {
+  const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -73,6 +75,8 @@ export default function Quiz() {
       toast.success("Quiz completed!");
     } catch (error) {
       toast.error(error.message || "Failed to save quiz results");
+    } finally {
+      router.push("/interview");
     }
   };
 
@@ -142,7 +146,7 @@ export default function Quiz() {
         </RadioGroup>
 
         {showExplanation && (
-          <div className="mt-4 p-4 bg-muted rounded-lg">
+          <div className="mt-4 p-4  rounded-lg">
             <p className="font-medium">Explanation:</p>
             <p className="text-muted-foreground">{question.explanation}</p>
           </div>
