@@ -1,57 +1,34 @@
 "use server";
-import { db } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { Assessment } from "@/models/Models";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateQuizPrompt, improvementPrompts } from "../lib/prompts";
+import { getAuthenticatedUser } from "./auth";
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-});
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 export async function generateQuiz() {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-    const user = await db.user.findUnique({ where: { clerkUserId: userId } });
-    if (!user) throw new Error("User not found");
-    const prompt = `
-    Generate ${process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS} technical interview questions for a ${user.industry
-        } professional${user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""
-        }.
-    
-    Each question should be multiple choice with 4 options.
-    
-    Return the response in this JSON format only, no additional text:
-    {
-      "questions": [
-        {
-          "question": "string",
-          "options": ["string", "string", "string", "string"],
-          "correctAnswer": "string",
-          "explanation": "string"
-        }
-      ]
+    const { success, error, user } = await getAuthenticatedUser();
+    if (!success) {
+        return { error };
     }
-  `;
+    const prompt = generateQuizPrompt(user);
     try {
         const result = await model.generateContent(prompt);
-        const response = result.response;
-        const text = response.text();
-        const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
-        const quiz = JSON.parse(cleanedText);
+        const text = result.response.text().replace(/```(?:json)?\n?/g, "").trim();
+        const quiz = JSON.parse(text);
         return quiz.questions;
-    } catch (error) {
-        console.error("Error generating quiz:", error);
-        throw new Error("Failed to generate quiz questions");
+    } catch (err) {
+        console.error("Error generating quiz:", err);
+        return { error: "Server error: " + err.message };
     }
 }
+
 export async function saveQuizResult(questions, answers, score) {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-        where: { clerkUserId: userId },
-    });
-
-    if (!user) throw new Error("User not found");
-
+    const { success, error, user } = await getAuthenticatedUser();
+    if (!success) {
+        return { error };
+    }
     const questionResults = questions.map((q, index) => ({
         question: q.question,
         answer: q.correctAnswer,
@@ -59,73 +36,82 @@ export async function saveQuizResult(questions, answers, score) {
         isCorrect: q.correctAnswer === answers[index],
         explanation: q.explanation,
     }));
-
     const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
-
     let improvementTip = null;
+
     if (wrongAnswers.length > 0) {
         const wrongQuestionsText = wrongAnswers
-            .map(
-                (q) =>
-                    `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
-            )
+            .map(q => `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`)
             .join("\n\n");
 
-        const improvementPrompt = `
-      The user got the following ${user.industry} technical interview questions wrong:
-
-      ${wrongQuestionsText}
-
-      Based on these mistakes, provide a concise, specific improvement tip.
-      Focus on the knowledge gaps revealed by these wrong answers.
-      Keep the response under 2 sentences and make it encouraging.
-      Don't explicitly mention the mistakes, instead focus on what to learn/practice.
-    `;
+        const improvementPrompt = improvementPrompts(user, wrongQuestionsText);
         try {
             const tipResult = await model.generateContent(improvementPrompt);
             improvementTip = tipResult.response.text().trim();
-            console.log(improvementTip);
         } catch (error) {
             console.error("Error generating improvement tip:", error);
             throw new Error("Failed to generate improvement tip");
         }
     }
     try {
-        const assessment = await db.assessment.create({
-            data: {
-                userId: user.id,
-                quizScore: score,
-                questions: questionResults,
-                category: "Technical",
-                improvementTip,
-            },
+        const assessment = await Assessment.create({
+            userId: user._id,
+            quizScore: score,
+            questions: questionResults,
+            category: "Technical",
+            improvementTip,
         });
-
         return assessment;
-    } catch (error) {
-        console.error("Error saving quiz result:", error);
-        throw new Error("Failed to save quiz result");
+    } catch (err) {
+        console.error("Error saving quiz result:", err);
+        return { error: "Failed to save quiz result" + err.message };
     }
 }
+
 export async function getAssessments() {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-    const user = await db.user.findUnique({
-        where: { clerkUserId: userId },
-    });
-    if (!user) throw new Error("User not found");
     try {
-        const assessments = await db.assessment.findMany({
-            where: {
-                userId: user.id,
-            },
-            orderBy: {
-                createdAt: "asc",
-            },
+        const { success, error, user } = await getAuthenticatedUser();
+        if (!success) {
+            return { error };
+        }
+        const assessments = await Assessment.find({ userId: user._id }).sort({ createdAt: "asc" });
+        const serializedAssessments = assessments.map(assessment => {
+            return {
+                _id: assessment._id.toString(),
+                userId: assessment.userId.toString(),
+                quizScore: assessment.quizScore,
+                questions: assessment.questions,
+                category: assessment.category,
+                improvementTip: assessment.improvementTip,
+                createdAt: assessment.createdAt.toISOString(),
+                updatedAt: assessment.updatedAt.toISOString(),
+            };
         });
-        return assessments;
-    } catch (error) {
-        console.error("Error fetching assessments:", error);
-        throw new Error("Failed to fetch assessments");
+        return serializedAssessments;
+    } catch (err) {
+        console.error("Error fetching assessments:", err);
+        return { error: "Failed to fetch assessments" + err.message };
     }
+}
+
+export async function voiceInterviewQue(jobPos, jobDesc, jobExp) {
+    const { success, error } = await getAuthenticatedUser();
+    if (!success) {
+        return { error };
+    }
+    const prompt = `
+    Job position: ${jobPos}, Job Description: ${jobDesc}, Years of Experience : ${jobExp} , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
+  `;
+    try {
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const text = response.text();
+        const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
+        const quiz = JSON.parse(cleanedText);
+        return cleanedText;
+    } catch (err) {
+        console.error("Error generating voice interview questions", err);
+        return { error: "Failed to generate voice interview questions" + err.message };
+    }
+
 }

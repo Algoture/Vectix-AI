@@ -11,7 +11,7 @@ const Features = () => {
           {features.slice(0, 4).map((feature) => (
             <Card
               key={feature.title}
-              className="border-2 hover:border-primary transition-colors duration-300">
+              className="border-gray-700 border-2 hover:border-primary transition-colors duration-300">
               <CardContent className=" text-center flex flex-col items-center">
                 <div className="flex flex-col items-center justify-center">
                   {feature.icon}
