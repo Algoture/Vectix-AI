@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { TickIcon } from "@/components/custom/Icons";
 import { pricingPlans } from "@/data/pricingplans";
+import SpotlightCard from "@/components/ui/spotlightcard";
 
 const PricingTable = () => {
   return (
@@ -24,13 +25,14 @@ const PricingTable = () => {
         </div>
         <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-3">
           {pricingPlans.map((tier) => (
+            <SpotlightCard className="custom-spotlight-card" spotlightColor="rgba(109, 40, 217, 0.5) " key={tier.id}>
             <Card
-              key={tier.id}
+              
               className={`${
-                tier.mostPopular ? "relative z-10 scale-105 shadow-md" : ""
+                tier.mostPopular ? "" : ""
               } flex flex-col`}>
               {tier.mostPopular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-primary px-3 py-1 text-center text-xs font-medium text-white">
+                <div className="absolute top-1 left-0 right-0 mx-auto w-32 rounded-full bg-primary px-3 py-1 text-center text-xs font-medium text-white">
                   Most Popular
                 </div>
               )}
@@ -70,6 +72,7 @@ const PricingTable = () => {
                 </Button>
               </CardFooter>
             </Card>
+             </SpotlightCard>
           ))}
         </div>
       </div>

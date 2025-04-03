@@ -1,5 +1,8 @@
+"use client"
 import { Card, CardContent } from "@/components/ui/card";
 import { features } from "@/data/features";
+import SpotlightCard from "../ui/spotlightcard";
+
 const Features = () => {
   return (
     <section className="w-full bg-background py-12 md:py-24 lg:py-28 ">
@@ -9,9 +12,10 @@ const Features = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
           {features.slice(0, 4).map((feature) => (
+            <SpotlightCard className="custom-spotlight-card h-fit" spotlightColor="rgba(109, 40, 217, 0.5) " key={feature.title}>
             <Card
-              key={feature.title}
-              className="border-gray-700 border-2 hover:border-primary transition-colors duration-300">
+              
+              className=" hover:border-primary transition-colors duration-300 h-fit rounded-3xl">
               <CardContent className=" text-center flex flex-col items-center">
                 <div className="flex flex-col items-center justify-center">
                   {feature.icon}
@@ -20,6 +24,7 @@ const Features = () => {
                 </div>
               </CardContent>
             </Card>
+            </SpotlightCard>
           ))}
         </div>
       </div>
