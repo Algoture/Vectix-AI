@@ -1,12 +1,12 @@
-// import { auth } from "@clerk/nextjs/server";
-// import { redirect } from "next/navigation";
+import { getOnboardingStatus } from "@/actions/auth";
 import OnboardingForm from "./_components/OnboardingForm";
-import { getUserData, seedUser } from "@/actions/userActions";
+import { getUserData, seedUser } from "@/actions/user";
 import { industries } from "@/data/industries";
-import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
 export default async function OnboardingPage() {
-  const { userId } = await auth();
-  if (userId) {
+  const { isOnboarded } = await getOnboardingStatus();
+  if (isOnboarded) {
     redirect("/dashboard");
   }
 

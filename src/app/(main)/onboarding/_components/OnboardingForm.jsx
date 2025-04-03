@@ -29,16 +29,14 @@ import { updateUser } from "@/actions/user";
 
 const OnboardingForm = ({ industries = [], initialData = null, onSuccess }) => {
   const router = useRouter();
+  const [selectedIndustryObject, setSelectedIndustryObject] = useState(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
-
   const [industry, setIndustry] = useState("");
   const [subIndustry, setSubIndustry] = useState("");
   const [experience, setExperience] = useState("");
   const [skills, setSkills] = useState("");
   const [bio, setBio] = useState("");
-
-  const [selectedIndustryObject, setSelectedIndustryObject] = useState(null);
 
   useEffect(() => {
     if (initialData) {
