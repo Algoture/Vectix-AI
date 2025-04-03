@@ -42,6 +42,9 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
+html, body {
+  overflow-x: hidden;
+}
 
 .gradientBg {
   background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.4));
@@ -86,7 +89,7 @@
   --primary-foreground: hsl(210, 20%, 98%);
   --secondary: hsl(215, 27.9%, 16.9%);
   --secondary-foreground: hsl(210, 20%, 98%);
-  --muted-foreground:#666666;
+  --muted-foreground: #666666;
   --accent: hsl(215, 27.9%, 16.9%);
   --accent-foreground: hsl(210, 20%, 98%);
   --destructive: hsl(0, 62.8%, 30.6%);
@@ -121,7 +124,7 @@
 }
 
 @utility gradient {
-  @apply bg-gradient-to-b from-gray-200 via-gray-400 to-gray-200
+  @apply bg-gradient-to-b from-gray-200 via-gray-400 to-gray-200;
 }
 
 @layer utilities {
