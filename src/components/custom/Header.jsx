@@ -16,10 +16,8 @@ export default function Header() {
           <ul className="flex gap-20 items-center cursor-pointer">
             <li>
               <Link href="/" className="flex items-center pl-1">
-                <Logo className="fill-primary dark:fill-white size-6 rotate-180" />
-                <p className=" font-semibold">
-                  Vectix AI
-                </p>
+                <Logo className="fill-primary  size-6 rotate-180" />
+                <p className=" font-semibold">Vectix AI</p>
               </Link>
             </li>
             <li className="flex gap-4">
@@ -27,7 +25,7 @@ export default function Header() {
                 href={"/pricing"}
                 className={clsx(
                   pathname === "/pricing"
-                    ? "dark:text-white "
+                    ? "text-white "
                     : "text-muted-foreground"
                 )}>
                 Pricing
@@ -36,7 +34,7 @@ export default function Header() {
                 href={"/support"}
                 className={clsx(
                   pathname === "/support"
-                    ? "dark:text-white "
+                    ? "text-white "
                     : "text-muted-foreground"
                 )}>
                 Support

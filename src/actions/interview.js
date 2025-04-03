@@ -75,7 +75,19 @@ export async function getAssessments() {
             return { error };
         }
         const assessments = await Assessment.find({ userId: user._id }).sort({ createdAt: "asc" });
-        return assessments;
+        const serializedAssessments = assessments.map(assessment => {
+            return {
+                _id: assessment._id.toString(),
+                userId: assessment.userId.toString(),
+                quizScore: assessment.quizScore,
+                questions: assessment.questions,
+                category: assessment.category,
+                improvementTip: assessment.improvementTip,
+                createdAt: assessment.createdAt.toISOString(),
+                updatedAt: assessment.updatedAt.toISOString(),
+            };
+        });
+        return serializedAssessments;
     } catch (err) {
         console.error("Error fetching assessments:", err);
         return { error: "Failed to fetch assessments" + err.message };

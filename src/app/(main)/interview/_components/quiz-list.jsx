@@ -29,7 +29,7 @@ export default function QuizList({ assessments }) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="gradient-title dark:bg-gradient-to-b dark:from-gray-200 dark:via-gray-400 dark:to-gray-200 text-transparent bg-clip-text text-3xl md:text-4xl">
+              <CardTitle className="gradient-title text-transparent bg-clip-text text-3xl md:text-4xl">
                 Recent Quizzes
               </CardTitle>
               <CardDescription>
@@ -45,11 +45,11 @@ export default function QuizList({ assessments }) {
           <div className="space-y-4">
             {assessments?.map((assessment, i) => (
               <Card
-                key={assessment.id}
+                key={assessment._id}
                 className="cursor-pointer hover:bg-muted/50 transition-colors"
                 onClick={() => setSelectedQuiz(assessment)}>
                 <CardHeader>
-                  <CardTitle className="gradient-title dark:bg-gradient-to-b dark:from-gray-200 dark:via-gray-400 dark:to-gray-200 text-transparent bg-clip-text text-2xl">
+                  <CardTitle className="gradient-title  text-transparent bg-clip-text text-2xl">
                     Quiz {i + 1}
                   </CardTitle>
                   <CardDescription className="flex justify-between w-full">
