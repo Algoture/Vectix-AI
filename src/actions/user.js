@@ -2,7 +2,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { getAuthenticatedUser } from "./auth";
 import { User } from "@/models/Models";
-import { User } from "@/models/Models";
 import { connectDB } from "@/lib/db";
 
 export async function updateUser(data) {
@@ -76,6 +75,6 @@ export async function getUserData() {
         return JSON.parse(JSON.stringify(user));
     } catch (err) {
         console.error('Error in getUserData:');
-        return { error: "Server error: " + err.message };;
+        return { error: "Server error: " + err.message };
     }
 }
