@@ -1,38 +1,44 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import dynamic from "next/dynamic";
+
+// Static imports for components
+import {ContactInfoForm} from "./ContactInfoForm";
+import {TextAreaSection }from "./TextAreaSection";
+import {EntryListForm }from "./EntryListForm";
+import {MarkdownPreview} from "./MarkdownPreview";
+import {ActionButtons }from "./ActionButtons";
 
 import { saveResume } from "@/actions/resume";
-
-import { ContactInfoForm } from "./ContactInfoForm";
-import { TextAreaSection } from "./TextAreaSection";
-import { EntryListForm } from "./EntryListForm";
-import { MarkdownPreview } from "./MarkdownPreview";
-import { ActionButtons } from "./ActionButtons";
 import { entriesToMarkdown } from "@/app/lib/helper";
-
-const html2pdf = dynamic(() => import("html2pdf.js"), { ssr: false });
 
 export default function ResumeBuilder({ initialContent = "" }) {
   const { user, isLoaded: isUserLoaded } = useUser();
+  const pdfRef = useRef(null);
+  const [html2pdf, setHtml2pdf] = useState(null);
 
+  // Load html2pdf only on client-side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      import("html2pdf.js").then((module) => {
+        setHtml2pdf(() => module.default);
+      });
+    }
+  }, []);
+
+  // State management
   const [previewContent, setPreviewContent] = useState(initialContent);
-  const [activeTab, setActiveTab] = useState(
-    initialContent ? "preview" : "edit"
-  );
+  const [activeTab, setActiveTab] = useState(initialContent ? "preview" : "edit");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [
-    formEditedSinceLastPreviewUpdate,
-    setFormEditedSinceLastPreviewUpdate,
-  ] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  // Form state
   const [contactInfo, setContactInfo] = useState({
     email: "",
     mobile: "",
@@ -45,20 +51,22 @@ export default function ResumeBuilder({ initialContent = "" }) {
   const [education, setEducation] = useState([]);
   const [projects, setProjects] = useState([]);
 
+  // Generate contact info markdown
   const getContactMarkdown = useCallback(() => {
     const parts = [];
     const userName = user?.fullName || "Your Name";
+    
     if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
     if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-    if (contactInfo.linkedin)
-      parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
+    if (contactInfo.linkedin) parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
     if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
-    if (!parts.length) return "";
-    return `## <div align="center">${userName}</div>\n\n<div align="center">\n\n${parts.join(
-      " | "
-    )}\n\n</div>`;
+    
+    return parts.length 
+      ? `## <div align="center">${userName}</div>\n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
+      : "";
   }, [contactInfo, user?.fullName]);
 
+  // Combine all sections into markdown
   const getCombinedContent = useCallback(() => {
     return [
       getContactMarkdown(),
@@ -73,26 +81,21 @@ export default function ResumeBuilder({ initialContent = "" }) {
       .trim();
   }, [getContactMarkdown, summary, skills, experience, education, projects]);
 
+  // Handle field changes
   const handleFieldChange = (setter) => (value) => {
     setter(value);
-    setFormEditedSinceLastPreviewUpdate(true);
+    setHasUnsavedChanges(true);
   };
 
-  const handleContactChange = handleFieldChange(setContactInfo);
-  const handleSummaryChange = handleFieldChange(setSummary);
-  const handleSkillsChange = handleFieldChange(setSkills);
-  const handleExperienceChange = handleFieldChange(setExperience);
-  const handleEducationChange = handleFieldChange(setEducation);
-  const handleProjectsChange = handleFieldChange(setProjects);
-
+  // Update preview content
   useEffect(() => {
-    if (activeTab === "edit" || formEditedSinceLastPreviewUpdate) {
-      const newContent = getCombinedContent();
-      setPreviewContent(newContent);
-      setFormEditedSinceLastPreviewUpdate(false);
+    if (activeTab === "edit" || hasUnsavedChanges) {
+      setPreviewContent(getCombinedContent());
+      setHasUnsavedChanges(false);
     }
-  }, [activeTab, formEditedSinceLastPreviewUpdate, getCombinedContent]);
+  }, [activeTab, hasUnsavedChanges, getCombinedContent]);
 
+  // Save resume handler
   const handleSave = useCallback(async () => {
     if (!previewContent.trim()) {
       toast.error("Cannot save an empty resume.");
@@ -103,58 +106,77 @@ export default function ResumeBuilder({ initialContent = "" }) {
     try {
       const result = await saveResume(previewContent);
       if (result.success) {
-        toast.success("Resume saved!");
+        toast.success("Resume saved successfully!");
+        setHasUnsavedChanges(false);
       } else {
         toast.error(result.error || "Failed to save resume.");
       }
     } catch (error) {
       toast.error("An unexpected error occurred while saving.");
+      console.error("Save error:", error);
     } finally {
       setIsSaving(false);
     }
-  }, [previewContent, user?.id]);
+  }, [previewContent]);
 
+  // Generate PDF handler
   const generatePDF = useCallback(async () => {
-    if (!html2pdf) {
-      toast.error("PDF generator is not ready yet.");
-      return;
-    }
     if (!previewContent.trim()) {
       toast.error("Cannot generate PDF for an empty resume.");
       return;
     }
+
+    if (!html2pdf) {
+      toast.error("PDF generator is not ready yet. Please try again.");
+      return;
+    }
+
     setIsGeneratingPdf(true);
-    toast.info("Generating PDF...");
     try {
-      const element = document.getElementById("resume-pdf");
-      if (!element) {
-        throw new Error("PDF source element not found.");
-      }
-      const opt = {
-        margin: [15, 15],
-        filename: "resume.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      // Create a new element for PDF generation
+      const element = document.createElement("div");
+      element.className = "p-8 markdown-body";
+      element.style.background = "white";
+      element.style.color = "black";
+      element.style.width = "210mm";
+      element.style.minHeight = "297mm";
+      
+      // Use the current preview content
+      element.innerHTML = `<div>${previewContent}</div>`;
+      document.body.appendChild(element);
+
+      const options = {
+        margin: 15,
+        filename: `${user?.fullName || 'resume'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          logging: true,
+          useCORS: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
       };
-      await html2pdf().set(opt).from(element).save(); 
-      toast.success("PDF downloaded!");
+
+      await html2pdf().set(options).from(element).save();
+      document.body.removeChild(element);
+      toast.success("PDF downloaded successfully!");
     } catch (error) {
       toast.error(`PDF generation failed: ${error.message}`);
+      console.error("PDF error:", error);
     } finally {
       setIsGeneratingPdf(false);
     }
   }, [previewContent, user?.fullName, html2pdf]);
 
-  const handlePreviewContentChange = useCallback((value) => {
-    setPreviewContent(value || "");
-  }, []);
-
   if (!isUserLoaded) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Loading User...</span>
+        <span className="ml-2">Loading User Data...</span>
       </div>
     );
   }
@@ -167,72 +189,64 @@ export default function ResumeBuilder({ initialContent = "" }) {
           isGeneratingPdf={isGeneratingPdf}
           onSave={handleSave}
           onGeneratePdf={generatePDF}
+          hasChanges={hasUnsavedChanges}
         />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4 grid grid-cols-2 w-fit">
           <TabsTrigger value="edit">Edit Form</TabsTrigger>
-          <TabsTrigger value="preview">Preview & Edit Markdown</TabsTrigger>
+          <TabsTrigger value="preview">Preview & Edit</TabsTrigger>
         </TabsList>
 
         <TabsContent value="edit" className="space-y-8 mt-6">
-          <ContactInfoForm value={contactInfo} onChange={handleContactChange} />
+          <ContactInfoForm 
+            value={contactInfo} 
+            onChange={handleFieldChange(setContactInfo)} 
+          />
+          
           <TextAreaSection
             title="Professional Summary"
-            name="summary"
             value={summary}
-            onChange={handleSummaryChange}
-            placeholder="Write a compelling professional summary (2-4 sentences)..."
+            onChange={handleFieldChange(setSummary)}
+            placeholder="Highlight your professional experience and skills..."
           />
+          
           <TextAreaSection
             title="Skills"
-            name="skills"
             value={skills}
-            onChange={handleSkillsChange}
-            placeholder="List your key skills, separated by commas or new lines (e.g., JavaScript, React, Node.js, Project Management)..."
+            onChange={handleFieldChange(setSkills)}
+            placeholder="List your technical and soft skills..."
           />
+          
           <EntryListForm
             type="Experience"
             entries={experience}
-            onChange={handleExperienceChange}
+            onChange={handleFieldChange(setExperience)}
           />
+          
           <EntryListForm
             type="Education"
             entries={education}
-            onChange={handleEducationChange}
+            onChange={handleFieldChange(setEducation)}
           />
+          
           <EntryListForm
             type="Project"
             entries={projects}
-            onChange={handleProjectsChange}
+            onChange={handleFieldChange(setProjects)}
           />
         </TabsContent>
 
         <TabsContent value="preview" className="mt-6">
-          {typeof html2pdf === "function" ? (
-            <MarkdownPreview
-              content={previewContent}
-              onContentChange={handlePreviewContentChange}
-              isFormEdited={
-                formEditedSinceLastPreviewUpdate && activeTab === "edit"
-              }
-            />
-          ) : (
-            <div className="flex justify-center items-center h-64 border rounded-lg">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-500" />
-              <span className="ml-2 text-gray-600">
-                Loading Preview Editor...
-              </span>
-            </div>
-          )}
-          <div className="hidden">
-            <div
-              id="resume-pdf"
-              style={{ background: "white", color: "black"}}>
-              <MDEditor.Markdown source={previewContent} />
-            </div>
-          </div>
+          <MarkdownPreview
+            content={previewContent}
+            onContentChange={(value) => {
+              setPreviewContent(value || "");
+              setHasUnsavedChanges(true);
+            }}
+            hasFormChanges={hasUnsavedChanges && activeTab === "edit"}
+          />
         </TabsContent>
       </Tabs>
     </div>
