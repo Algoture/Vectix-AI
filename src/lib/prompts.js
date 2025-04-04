@@ -19,6 +19,7 @@ export function generateQuizPrompt(user) {
       `;
   return prompt;
 }
+
 export function improvementPrompts(user, wrongQuestionsText) {
   const improvementPrompt = `
       The user got the following ${user.industry} technical interview questions wrong:
@@ -31,4 +32,23 @@ export function improvementPrompts(user, wrongQuestionsText) {
       Don't explicitly mention the mistakes, instead focus on what to learn/practice.
     `;
   return improvementPrompt;
+}
+
+export function improveResumePrompt(type, current, user) {
+  const prompt = `
+    As an expert resume writer, improve the following ${type} description for a ${user.industry} professional.
+    Make it more impactful, quantifiable, and aligned with industry standards.
+    Current content: "${current}"
+
+    Requirements:
+    1. Use action verbs
+    2. Include metrics and results where possible
+    3. Highlight relevant technical skills
+    4. Keep it concise but detailed
+    5. Focus on achievements over responsibilities
+    6. Use industry-specific keywords
+    
+    Format the response as a single paragraph without any additional text or explanations.
+  `;
+  return prompt;
 }

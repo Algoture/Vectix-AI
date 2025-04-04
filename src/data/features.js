@@ -22,11 +22,6 @@ export const features = [
     {
         icon: <BotIcon className="size-10 mb-2 text-primary" />,
         title: "Live AI Voice Interview",
-        description: "Conduct realistic interview simulations with our voice-based AI that responds naturally to your answers.",
-    },
-    {
-        icon: <Mic className="size-10 mb-2 text-primary" />,
-        title: "Live AI Voice Interview",
-        description: "Conduct realistic interview simulations with our voice-based AI that responds naturally to your answers.",
-    },
+        description: "Conduct realistic interview  with our voice-based AI that responds to your answers.",
+    }
 ];
