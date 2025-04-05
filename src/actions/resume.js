@@ -29,7 +29,6 @@ export async function saveResume(content) {
         setDefaultsOnInsert: true
       }
     );
-    console.log(`Resume successfully upserted for userId: ${user.id}, Resume ID: ${updatedResume._id}`);
     revalidatePath("/resume");
     return {
       success: true,

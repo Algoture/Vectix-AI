@@ -1,4 +1,3 @@
-// components/PdfGenerator.jsx
 "use client";
 
 import { useEffect } from "react";

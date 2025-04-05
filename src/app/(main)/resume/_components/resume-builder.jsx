@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback} from "react";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import MDEditor from "@uiw/react-md-editor";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Static imports for components
 import {ContactInfoForm} from "./ContactInfoForm";
 import {TextAreaSection }from "./TextAreaSection";
 import {EntryListForm }from "./EntryListForm";
@@ -16,13 +14,12 @@ import {ActionButtons }from "./ActionButtons";
 
 import { saveResume } from "@/actions/resume";
 import { entriesToMarkdown } from "@/app/lib/helper";
+import MDEditor from "@uiw/react-md-editor";
 
 export default function ResumeBuilder({ initialContent = "" }) {
   const { user, isLoaded: isUserLoaded } = useUser();
-  const pdfRef = useRef(null);
   const [html2pdf, setHtml2pdf] = useState(null);
 
-  // Load html2pdf only on client-side
   useEffect(() => {
     if (typeof window !== "undefined") {
       import("html2pdf.js").then((module) => {
@@ -31,14 +28,12 @@ export default function ResumeBuilder({ initialContent = "" }) {
     }
   }, []);
 
-  // State management
   const [previewContent, setPreviewContent] = useState(initialContent);
   const [activeTab, setActiveTab] = useState(initialContent ? "preview" : "edit");
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  // Form state
   const [contactInfo, setContactInfo] = useState({
     email: "",
     mobile: "",
@@ -51,22 +46,20 @@ export default function ResumeBuilder({ initialContent = "" }) {
   const [education, setEducation] = useState([]);
   const [projects, setProjects] = useState([]);
 
-  // Generate contact info markdown
   const getContactMarkdown = useCallback(() => {
     const parts = [];
     const userName = user?.fullName || "Your Name";
     
-    if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
-    if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-    if (contactInfo.linkedin) parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
-    if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
+    if (contactInfo.email) parts.push(`${contactInfo.email}`);
+    if (contactInfo.mobile) parts.push(`${contactInfo.mobile}`);
+    if (contactInfo.linkedin) parts.push(`[LinkedIn](${contactInfo.linkedin})`);
+    if (contactInfo.twitter) parts.push(`[Twitter](${contactInfo.twitter})`);
     
     return parts.length 
       ? `## <div align="center">${userName}</div>\n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
       : "";
   }, [contactInfo, user?.fullName]);
 
-  // Combine all sections into markdown
   const getCombinedContent = useCallback(() => {
     return [
       getContactMarkdown(),
@@ -81,13 +74,11 @@ export default function ResumeBuilder({ initialContent = "" }) {
       .trim();
   }, [getContactMarkdown, summary, skills, experience, education, projects]);
 
-  // Handle field changes
   const handleFieldChange = (setter) => (value) => {
     setter(value);
     setHasUnsavedChanges(true);
   };
 
-  // Update preview content
   useEffect(() => {
     if (activeTab === "edit" || hasUnsavedChanges) {
       setPreviewContent(getCombinedContent());
@@ -95,7 +86,6 @@ export default function ResumeBuilder({ initialContent = "" }) {
     }
   }, [activeTab, hasUnsavedChanges, getCombinedContent]);
 
-  // Save resume handler
   const handleSave = useCallback(async () => {
     if (!previewContent.trim()) {
       toast.error("Cannot save an empty resume.");
@@ -119,7 +109,6 @@ export default function ResumeBuilder({ initialContent = "" }) {
     }
   }, [previewContent]);
 
-  // Generate PDF handler
   const generatePDF = useCallback(async () => {
     if (!previewContent.trim()) {
       toast.error("Cannot generate PDF for an empty resume.");
@@ -133,7 +122,6 @@ export default function ResumeBuilder({ initialContent = "" }) {
 
     setIsGeneratingPdf(true);
     try {
-      // Create a new element for PDF generation
       const element = document.createElement("div");
       element.className = "p-8 markdown-body";
       element.style.background = "white";
@@ -141,7 +129,6 @@ export default function ResumeBuilder({ initialContent = "" }) {
       element.style.width = "210mm";
       element.style.minHeight = "297mm";
       
-      // Use the current preview content
       element.innerHTML = `<div>${previewContent}</div>`;
       document.body.appendChild(element);
 
