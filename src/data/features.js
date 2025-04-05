@@ -1,4 +1,4 @@
-import { BotIcon, BrainCircuit, Briefcase, LineChart, Mic, } from "lucide-react";
+import { BotIcon, BrainCircuit, Briefcase, FileText } from "lucide-react";
 
 export const features = [
     {
@@ -14,10 +14,10 @@ export const features = [
             "Practice with role-specific questions and get instant feedback to improve your performance.",
     },
     {
-        icon: <LineChart className="size-10 mb-2 text-primary" />,
-        title: "Industry Insights",
+        icon: <FileText className="size-10 mb-2 text-primary" />,
+        title: "Resume Builder",
         description:
-            "Stay ahead by following real-time industry trends, analyzing salary data, and gaining insights from market analysis.",
+            "Stand out with AI-optimized resumes, tailored to job roles, ATS-friendly , and real-time industry standards.",
     },
     {
         icon: <BotIcon className="size-10 mb-2 text-primary" />,
