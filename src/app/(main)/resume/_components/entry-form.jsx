@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { entrySchema } from "@/app/lib/schema";
-import { Sparkles, PlusCircle, X, Pencil, Save, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, X, Loader2 } from "lucide-react";
 import { improveWithAI } from "@/actions/resume";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
@@ -113,8 +113,7 @@ export function EntryForm({ type, entries, onChange }) {
                 variant="outline"
                 size="icon"
                 type="button"
-                onClick={() => handleDelete(index)}
-              >
+                onClick={() => handleDelete(index)}>
                 <X className="h-4 w-4" />
               </Button>
             </CardHeader>
@@ -224,8 +223,7 @@ export function EntryForm({ type, entries, onChange }) {
               variant="ghost"
               size="sm"
               onClick={handleImproveDescription}
-              disabled={isImproving || !watch("description")}
-            >
+              disabled={isImproving || !watch("description")}>
               {isImproving ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -246,8 +244,7 @@ export function EntryForm({ type, entries, onChange }) {
               onClick={() => {
                 reset();
                 setIsAdding(false);
-              }}
-            >
+              }}>
               Cancel
             </Button>
             <Button type="button" onClick={handleAdd}>
@@ -262,8 +259,7 @@ export function EntryForm({ type, entries, onChange }) {
         <Button
           className="w-full"
           variant="outline"
-          onClick={() => setIsAdding(true)}
-        >
+          onClick={() => setIsAdding(true)}>
           <PlusCircle className="h-4 w-4 mr-2" />
           Add {type}
         </Button>
