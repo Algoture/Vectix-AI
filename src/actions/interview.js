@@ -1,22 +1,23 @@
 "use server";
-import { Assessment } from "@/models/Models";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { generateQuizPrompt, improvementPrompts } from "../lib/prompts";
-import { getAuthenticatedUser } from "./auth";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+import { Assessment } from "@/models/Models";
+import { getAuthenticatedUser } from "./auth";
+import { generateQuizPrompt, improvementPrompts } from "@/lib/prompts";
+import { model } from "./genAI";
 
 export async function generateQuiz() {
     const { success, error, user } = await getAuthenticatedUser();
-    if (!success) {
-        return { error };
-    }
+    if (!success) return { error };
     const prompt = generateQuizPrompt(user);
     try {
         const result = await model.generateContent(prompt);
         const text = result.response.text().replace(/```(?:json)?\n?/g, "").trim();
-        const quiz = JSON.parse(text);
+        let quiz;
+        try {
+            quiz = JSON.parse(text);
+        } catch {
+            return { error: "Invalid quiz format received." };
+        }
         return quiz.questions;
     } catch (err) {
         console.error("Error generating quiz:", err);
@@ -26,9 +27,7 @@ export async function generateQuiz() {
 
 export async function saveQuizResult(questions, answers, score) {
     const { success, error, user } = await getAuthenticatedUser();
-    if (!success) {
-        return { error };
-    }
+    if (!success) return { error };
     const questionResults = questions.map((q, index) => ({
         question: q.question,
         answer: q.correctAnswer,
@@ -38,59 +37,55 @@ export async function saveQuizResult(questions, answers, score) {
     }));
     const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
     let improvementTip = null;
+    if (wrongAnswers.length > 0 && wrongAnswers.length <= 5) {
+        const wrongQuestionsText = wrongAnswers.map((q) =>
+            `Question: "${q.question}"\nCorrect: "${q.answer}"\nYour Answer: "${q.userAnswer}"`
+        ).join("\n\n");
 
-    if (wrongAnswers.length > 0) {
-        const wrongQuestionsText = wrongAnswers
-            .map(q => `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`)
-            .join("\n\n");
-
-        const improvementPrompt = improvementPrompts(user, wrongQuestionsText);
+        const prompt = improvementPrompts(user, wrongQuestionsText);
         try {
-            const tipResult = await model.generateContent(improvementPrompt);
+            const tipResult = await model.generateContent(prompt);
             improvementTip = tipResult.response.text().trim();
-        } catch (error) {
-            console.error("Error generating improvement tip:", error);
-            throw new Error("Failed to generate improvement tip");
+        } catch (err) {
+            console.error("Error generating tip:", err);
         }
     }
     try {
-        const assessment = await Assessment.create({
+        await Assessment.create({
             userId: user._id,
             quizScore: score,
             questions: questionResults,
             category: "Technical",
             improvementTip,
         });
-        return assessment;
+        // return assessment.toObject();
     } catch (err) {
         console.error("Error saving quiz result:", err);
-        return { error: "Failed to save quiz result" + err.message };
+        return { error: "Failed to save result: " + err.message };
     }
 }
 
-export async function getAssessments() {
+export async function getAssessments(page = 0, limit = 10) {
+    const { success, error, user } = await getAuthenticatedUser();
+    if (!success) return { error };
     try {
-        const { success, error, user } = await getAuthenticatedUser();
-        if (!success) {
-            return { error };
-        }
-        const assessments = await Assessment.find({ userId: user._id }).sort({ createdAt: "asc" });
-        const serializedAssessments = assessments.map(assessment => {
-            return {
-                _id: assessment._id.toString(),
-                userId: assessment.userId.toString(),
-                quizScore: assessment.quizScore,
-                questions: assessment.questions,
-                category: assessment.category,
-                improvementTip: assessment.improvementTip,
-                createdAt: assessment.createdAt.toISOString(),
-                updatedAt: assessment.updatedAt.toISOString(),
-            };
-        });
-        return serializedAssessments;
+        const assessments = await Assessment.find({ userId: user._id })
+            .sort({ createdAt: "asc" })
+            .limit(limit)
+            .skip(page * limit);
+        return assessments.map((a) => ({
+            _id: a._id.toString(),
+            userId: a.userId.toString(),
+            quizScore: a.quizScore,
+            questions: a.questions,
+            category: a.category,
+            improvementTip: a.improvementTip,
+            createdAt: a.createdAt.toISOString(),
+            updatedAt: a.updatedAt.toISOString(),
+        }));
     } catch (err) {
         console.error("Error fetching assessments:", err);
-        return { error: "Failed to fetch assessments" + err.message };
+        return { error: "Failed to fetch: " + err.message };
     }
 }
 
