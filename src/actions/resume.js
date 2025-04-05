@@ -1,13 +1,10 @@
 "use server";
 
 import { improveResumePrompt } from "@/lib/prompts";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedUser } from "./auth";
 import { Resume } from "@/models/Models";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+import { model } from "./genAI";
 
 export async function saveResume(content) {
   const { success, user } = await getAuthenticatedUser();

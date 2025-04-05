@@ -68,6 +68,7 @@ const OnboardingForm = ({
 
     startTransition(async () => {
       const result = await updateUser(formData);
+      console.log(formData);
       if (result.success) {
         toast.success("Profile updated successfully!");
         if (onSuccess) {
