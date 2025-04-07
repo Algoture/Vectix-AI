@@ -89,20 +89,20 @@ export async function getAssessments(page = 0, limit = 10) {
     }
 }
 
-export async function voiceInterviewQue(jobPos, jobDesc, jobExp) {
-    const { success, error } = await getAuthenticatedUser();
+export async function voiceInterviewQue() {
+    const { success, error, user } = await getAuthenticatedUser();
     if (!success) {
         return { error };
     }
-    const prompt = `
-    Job position: ${jobPos}, Job Description: ${jobDesc}, Years of Experience : ${jobExp} , Depends on Job Position, Job Description & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
+    const voiceInterviewPrompt = `
+    Job position: ${user.specialization}, Skills: ${user.skills}, Years of Experience : ${user.experience} , Depends on Job Position, skills the candidate & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
   `;
     try {
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(voiceInterviewPrompt);
         const response = result.response;
         const text = response.text();
         const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
-        const quiz = JSON.parse(cleanedText);
+        const voiceQuestions = JSON.parse(cleanedText);
         return cleanedText;
     } catch (err) {
         console.error("Error generating voice interview questions", err);
