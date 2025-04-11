@@ -4,6 +4,7 @@ import { Trophy, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import clsx from "clsx";
 
 export default function QuizResult({
   result,
@@ -27,7 +28,7 @@ export default function QuizResult({
 
         {result.improvementTip && (
           <div className="bg-muted p-4 rounded-lg">
-            <p className="font-medium">Improvement Tip:</p>
+            <p className="font-medium text-black">Improvement Tip:</p>
             <p className="text-muted-foreground">{result.improvementTip}</p>
           </div>
         )}
@@ -37,20 +38,30 @@ export default function QuizResult({
           {result.questions.map((q, index) => (
             <div key={index} className="border rounded-lg p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <p className="font-medium">{q.question}</p>
+                <p className="text-neutral-400 font-semibold text-lg">
+                  {q.question}
+                </p>
                 {q.isCorrect ? (
                   <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                 ) : (
                   <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
                 )}
               </div>
-              <div className="text-sm text-muted-foreground">
-                <p>Your answer: {q.userAnswer}</p>
-                {!q.isCorrect && <p>Correct answer: {q.answer}</p>}
+              <div className="text-sm">
+                <p
+                  className={clsx(
+                    "font-medium",
+                    !q.isCorrect ? "text-gray-500" : "text-gray-200"
+                  )}>
+                  Your answer: {q.userAnswer}
+                </p>
+                {!q.isCorrect && (
+                  <p className="text-white">Correct answer: {q.answer}</p>
+                )}
               </div>
-              <div className="text-sm bg-muted p-2 rounded">
-                <p className="font-medium">Explanation:</p>
-                <p>{q.explanation}</p>
+              <div className="text-sm border p-2 rounded">
+                <p className="font-medium text-gray-300">Explanation:</p>
+                <p className="text-muted-foreground">{q.explanation}</p>
               </div>
             </div>
           ))}

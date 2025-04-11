@@ -124,7 +124,7 @@ html, body {
 }
 
 @utility gradient {
-  @apply bg-gradient-to-b from-gray-200 via-gray-400 to-gray-200;
+  @apply bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200;
 }
 
 @layer utilities {
