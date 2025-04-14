@@ -10,7 +10,7 @@ const Statistics = () => {
             { value: "24/7", label: "AI Support" },
           ].map((item, index) => (
             <div key={index} className="flex flex-col space-y-1">
-              <h3 className="text-4xl font-bold">{item.value}</h3>
+              <h3 className="text-4xl font-semibold">{item.value}</h3>
               <p className="text-muted-foreground">{item.label}</p>
             </div>
           ))}
