@@ -2,7 +2,7 @@ export const industries = [
     {
         id: "tech",
         name: "Technology",
-        subIndustries: [
+        specialization: [
             "Software Development",
             "IT Services",
             "Cybersecurity",

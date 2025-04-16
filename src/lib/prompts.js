@@ -1,7 +1,7 @@
-export function generateQuizPrompt(user) {
+export function generateQuizPrompt(skills, experience, specialization) {
   const prompt = `
-        Generate ${process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS} technical interview questions for a ${user.industry}
-        professional${user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""}.
+        Generate ${process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS} technical interview questions for a ${specialization}
+        professional${skills?.length ? ` with expertise in ${skills.join(", ")}` : ""} and ${experience} years of experience.
     
         Each question should be multiple choice with 4 options.
     
@@ -20,9 +20,9 @@ export function generateQuizPrompt(user) {
   return prompt;
 }
 
-export function improvementPrompts(user, wrongQuestionsText) {
+export function improvementPrompts(specialization, wrongQuestionsText) {
   const improvementPrompt = `
-      The user got the following ${user.industry} technical interview questions wrong:
+      The user got the following ${specialization} technical interview questions wrong:
 
       ${wrongQuestionsText}
 
@@ -34,9 +34,9 @@ export function improvementPrompts(user, wrongQuestionsText) {
   return improvementPrompt;
 }
 
-export function improveResumePrompt(type, current, user) {
+export function improveResumePrompt(type, current, industry) {
   const prompt = `
-    As an expert resume writer, improve the following ${type} description for a ${user.industry} professional.
+    As an expert resume writer, improve the following ${type} description for a ${industry} professional.
     Make it more impactful, quantifiable, and aligned with industry standards.
     Current content: "${current}"
 
@@ -50,5 +50,22 @@ export function improveResumePrompt(type, current, user) {
     
     Format the response as a single paragraph without any additional text or explanations.
   `;
+  return prompt;
+}
+
+export function voiceInterviewPrompt(skills, quesCount, specialization, experience, type) {
+  const prompt = `Prepare questions for a job interview.
+        The job role is ${specialization}.
+        The job experience level is ${experience} years.
+        The tech stack used in the job is: ${skills}.
+        The focus between behavioural and technical questions should lean towards: ${type}.
+        The amount of questions required is: ${quesCount}.
+        Please return only the questions, without any additional text.
+        The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
+        Return the questions formatted like this:
+        ["Question 1", "Question 2", "Question 3"]
+        
+        Thank you! <3
+    `
   return prompt;
 }

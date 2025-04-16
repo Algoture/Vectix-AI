@@ -1,7 +1,7 @@
 "use server";
 
 import { currentUser } from "@clerk/nextjs/server";
-import { getAuthenticatedUser } from "./auth";
+import { getAuthUser } from "./auth";
 import { User } from "@/models/Models";
 import { connectDB } from "@/lib/db";
 import { parseSkills } from "@/lib/utils";
@@ -32,21 +32,10 @@ export async function seedUser() {
     }
 }
 
-export async function getUserData() {
-    try {
-        const { success, error, user } = await getAuthenticatedUser();
-        if (!success) return { error };
-        return JSON.parse(JSON.stringify(user.specialization, user.skills, user.experience, user.bio));;
-    } catch (err) {
-        console.error("Error in getUserData:", err);
-        return { error: "Server error: " + err.message };
-    }
-}
-
 export async function updateUser(data) {
     try {
-        const { success, clerkUserId, error } = await getAuthenticatedUser();
-        if (!success) return { success: false, message: error };
+        const { success, id } = await getAuthUser();
+        if (!success) return null;
         const { specialization, bio, experience, skills } = data;
         if (!specialization || experience == null || !skills) {
             throw new Error("Specialization, Experience, and Skills are required.");
@@ -60,14 +49,13 @@ export async function updateUser(data) {
         };
         await connectDB();
         const updatedUser = await User.findOneAndUpdate(
-            { clerkUserId },
+            { _id: id },
             { $set: updateData },
             { new: true, runValidators: true }
         );
         if (!updatedUser) throw new Error("User not found during update.");
         return {
             success: true,
-            // user: updatedUser.toObject(),
             message: "User updated successfully.",
         };
     } catch (err) {

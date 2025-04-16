@@ -1,24 +1,30 @@
-import { voiceInterviewQue } from "@/actions/interview";
+"use client";
+import { useEffect, useState } from "react";
 import TakeInterview from "./TakeInterview";
+import { voiceInterviewQue } from "@/actions/interview";
 
 const page = () => {
-  print();
   const onSubmit = async (e) => {
     e.preventDefault();
   };
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    // async function voice() {
+    //   const fetchedata = await voiceInterviewQue();
+    //   console.log(fetchedata)
+    //   setData(fetchedata);
+    // }
+    // voice();
+  }, []);
 
-  return <>
-    <TakeInterview />
-    
-  </>;
+  return (
+    <>
+      <TakeInterview />
+      {/* {data.length>0 && data.map((ques,i) => {
+        return <p key={i}>{ques }</p>
+      })} */}
+    </>
+  );
 };
-
-
-async function print(){
-// const res =await voiceInterviewQue();
-// console.log(JSON.parse(res));
-
-}
-
 
 export default page;
