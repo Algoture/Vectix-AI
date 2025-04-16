@@ -1,11 +1,16 @@
 import { voiceInterviewQue } from "@/actions/interview";
+import TakeInterview from "./TakeInterview";
 
 const page = () => {
   print();
   const onSubmit = async (e) => {
     e.preventDefault();
   };
-  return <div>Voice Interview Page</div>;
+
+  return <>
+    <TakeInterview />
+    
+  </>;
 };
 
 
