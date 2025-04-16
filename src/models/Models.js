@@ -36,4 +36,4 @@ const User = mongoose.models?.User || mongoose.model("User", UserSchema);
 const Assessment = mongoose.models?.Assessment || mongoose.model("Assessment", AssessmentSchema);
 const Resume = mongoose.models?.Resume || mongoose.model("Resume", ResumeSchema);
 
-export { User, Assessment, Resume, CoverLetter };
+export { User, Assessment, Resume};

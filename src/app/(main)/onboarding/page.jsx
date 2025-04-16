@@ -2,6 +2,7 @@ import { getUserData } from "@/actions/user";
 import OnboardingForm from "./_components/OnboardingForm";
 import { getAuthenticatedUser } from "@/actions/auth";
 import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
   const userData = await getUserData();

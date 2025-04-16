@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
 import Aurora from "../ui/Aurora";
+import { ShimmerButton } from "../magicui/shimmer-button";
 
 const Hero = () => {
   return (
@@ -11,7 +11,7 @@ const Hero = () => {
         amplitude={1.0}
         speed={0.5}
       />
-      <div className="space-y-6 text-center z-50 pt-28 md:pt-36">
+      <div className="space-y-6 text-center z-50 pt-56 md:pt-36">
         <div className="space-y-4 mx-auto">
           <h1 className="gradient-title text-5xl md:text-7xl  text-transparent bg-clip-text">
             Your Personal AI Coach
@@ -23,12 +23,9 @@ const Hero = () => {
             AI
           </p>
         </div>
-
-        <div>
-          <Link href={"/onboarding"}>
-            <Button className="z-30" size={"lg"}>
-              Unlock Success
-            </Button>
+        <div className="cen">
+          <Link href={"/onboarding"} className=" ">
+            <ShimmerButton>Start Now</ShimmerButton>
           </Link>
         </div>
       </div>

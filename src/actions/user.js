@@ -25,7 +25,7 @@ export async function seedUser() {
                 skills: [],
             });
         }
-        return user.toObject();
+        return { success: true };
     } catch (err) {
         console.error("Error seeding user:", err);
         return { error: "Server error: " + err.message };

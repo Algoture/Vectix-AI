@@ -49,11 +49,11 @@ export default function QuizList({ assessments }) {
                 className="cursor-pointer"
                 onClick={() => setSelectedQuiz(assessment)}>
                 <CardHeader>
-                  <CardTitle className="gradient-title  text-transparent bg-clip-text text-2xl">
+                  <CardTitle className="gradient-title  bg-clip-text text-2xl">
                     Quiz {i + 1}
                   </CardTitle>
                   <CardDescription className="flex justify-between w-full">
-                    <div>Score: {assessment.quizScore.toFixed(1)}%</div>
+                    <div className="text-muted">Score: {assessment.quizScore.toFixed(1)}%</div>
                     <div>
                       {format(
                         new Date(assessment.createdAt),
@@ -64,7 +64,7 @@ export default function QuizList({ assessments }) {
                 </CardHeader>
                 {assessment.improvementTip && (
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/50">
                       {assessment.improvementTip}
                     </p>
                   </CardContent>

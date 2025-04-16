@@ -11,14 +11,14 @@ export default function Header() {
   return (
     <div className="relative">
       <div className="fixed top-5 z-20 flex w-full justify-center">
-        <nav className="bg-background/50  w-fit  border-gray-700 border gap-5 backdrop-blur-xl p-3  flex items-center rounded-md">
+        <nav className="bg-background/30 shadow-md border border-neutral-700/30  w-fit  gap-2 md:gap-5 backdrop-blur-xl p-2 flex items-center rounded-md">
           <ul className="flex gap-10 items-center cursor-pointer">
             <li>
               <Link href="/" className="flex items-center pl-1">
-                <p className=" font-semibold">Vectix AI</p>
+                <p className="font-semibold">Vectix AI</p>
               </Link>
             </li>
-            <li className="flex gap-4">
+            <li className="flex gap-2 md:gap-4">
               <Link
                 href={"/pricing"}
                 className={clsx(
@@ -33,23 +33,23 @@ export default function Header() {
                 )}>
                 Support
               </Link>
+              
             </li>
           </ul>
+          <div className="">
+            <div className="flex gap-2 md:gap-4">
+              <Signed />
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </div>
+            <SignedOut>
+              <SignInButton>
+                <Button>Sign In </Button>
+              </SignInButton>
+            </SignedOut>
+          </div>
         </nav>
-      </div>
-
-      <div className="fixed flex gap-2 top-6 right-5 z-20">
-        <Signed />
-        <SignedIn>
-          <UserButton afterSignOutUrl="/" />
-        </SignedIn>
-        <SignedOut>
-          <SignInButton>
-            <Button variant="outline" className="px-3 py-1 text-sm">
-              Sign In
-            </Button>
-          </SignInButton>
-        </SignedOut>
       </div>
     </div>
   );
