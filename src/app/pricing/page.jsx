@@ -16,7 +16,7 @@ const PricingTable = () => {
     <div className=" py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="mt-2 text-3xl font-bold tracking-tight  sm:text-4xl">
+          <p className="mt-2 text-3xl font-semibold tracking-tight  sm:text-4xl">
             Plans for Every Stage of Your Career
           </p>
           <p className="mt-4 text-lg leading-8 text-muted-foreground">
@@ -32,7 +32,7 @@ const PricingTable = () => {
                 tier.mostPopular ? "" : ""
               } flex flex-col`}>
               {tier.mostPopular && (
-                <div className="absolute top-1 left-0 right-0 mx-auto w-32 rounded-full bg-primary px-3 py-1 text-center text-xs font-medium text-white">
+                <div className="absolute top-2 left-0 right-0 mx-auto w-32 rounded-full bg-primary px-3 py-1 text-center text-xs font-medium text-white">
                   Most Popular
                 </div>
               )}

@@ -45,7 +45,7 @@ export async function saveResume(content) {
 }
 
 export async function getResume() {
-  const { success, error, user } = await getAuthenticatedUser();
+  const { success, user } = await getAuthenticatedUser();
   if (!success) {
     return null;
   }
