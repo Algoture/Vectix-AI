@@ -1,9 +1,8 @@
 import OnboardingForm from "../onboarding/_components/OnboardingForm";
-import { getUserData } from "@/actions/user";
-
+import { getAuthUser } from "@/actions/auth";
 async function page() {
-  
-  const userData = await getUserData();
+  const { specialization, experience, skills, bio } = await getAuthUser();
+  const userData = { specialization, experience, skills, bio };
   return (
     <div>
       <OnboardingForm

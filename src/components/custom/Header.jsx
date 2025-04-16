@@ -5,8 +5,12 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import Signed from "./Signed";
 import clsx from "clsx";
+import { useContext } from "react";
+import { onBoardingContext } from "@/context/onBoardContext";
 
 export default function Header() {
+  const context = useContext(onBoardingContext);
+  // console.log(context)
   const pathname = usePathname();
   return (
     <div className="relative">

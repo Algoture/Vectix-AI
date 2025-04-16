@@ -82,7 +82,6 @@ const OnboardingForm = ({
       }
     });
   };
-
   return (
     <div className="flex items-center justify-center bg-background">
       <Card className="w-full max-w-lg mt-10 mx-2">
@@ -99,9 +98,9 @@ const OnboardingForm = ({
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <SpecializationSelect
-              specialization={specialization}
+              selectedSubIndustry={specialization}
               onChange={(value) => setSpecialization(value)}
-              subIndustries={industries[0].subIndustries}
+              subIndustries={industries[0].specialization}
             />
 
             <ExpInput experience={experience} onChange={setExperience} />
