@@ -45,7 +45,7 @@ export default function QuizList({ assessments }) {
           <div className="space-y-4">
             {assessments?.map((assessment, i) => (
               <Card
-                key={assessment._id}
+                key={i}
                 className="cursor-pointer"
                 onClick={() => setSelectedQuiz(assessment)}>
                 <CardHeader>

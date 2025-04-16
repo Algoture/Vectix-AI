@@ -1,15 +1,10 @@
-import { getUserData } from "@/actions/user";
 import OnboardingForm from "./_components/OnboardingForm";
-import { getAuthenticatedUser } from "@/actions/auth";
-import { redirect } from "next/navigation";
+import { getAuthUser } from "@/actions/auth";
 export const dynamic = "force-dynamic";
 
 export default async function OnboardingPage() {
-  const userData = await getUserData();
-  const { user } = await getAuthenticatedUser();
-  if (user.specialization) {
-    redirect("/dashboard");
-  }
+  const { specialization, experience, skills, bio } = await getAuthUser();
+  const userData = { specialization, experience, skills, bio };
   return (
     <div className="-mt-10">
       <OnboardingForm

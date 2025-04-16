@@ -2,22 +2,20 @@
 
 import { improveResumePrompt } from "@/lib/prompts";
 import { revalidatePath } from "next/cache";
-import { getAuthenticatedUser } from "./auth";
+import { getAuthUser } from "./auth";
 import { Resume } from "@/models/Models";
 import { model } from "./genAI";
 
 export async function saveResume(content) {
-  const { success, user } = await getAuthenticatedUser();
-  if (!success) {
-    return null;
-  }
+  const { success, id } = await getAuthUser();
+  if (!success) return null;
 
   try {
     const updatedResume = await Resume.findOneAndUpdate(
-      { userId: user.id },
+      { userId: id },
       {
         $set: { content: content },
-        $setOnInsert: { userId: user.id, createdAt: new Date() }
+        $setOnInsert: { userId: id, createdAt: new Date() }
       },
       {
         new: true,
@@ -45,12 +43,10 @@ export async function saveResume(content) {
 }
 
 export async function getResume() {
-  const { success, user } = await getAuthenticatedUser();
-  if (!success) {
-    return null;
-  }
+  const { success, id } = await getAuthUser();
+  if (!success) return null;
   try {
-    const result = await Resume.findOne({ userId: user.id });
+    const result = await Resume.findOne({ userId: id });
     return result;
   } catch (err) {
     console.error("Error fetching Resume", err);
@@ -60,12 +56,10 @@ export async function getResume() {
 }
 
 export async function improveWithAI({ current, type }) {
-  const { success, error, user } = await getAuthenticatedUser();
-  if (!success) {
-    return { error }
-  }
+  const { success, specialization } = await getAuthUser();
+  if (!success) return null;
 
-  const prompt = improveResumePrompt(type, current, user);
+  const prompt = improveResumePrompt(type, current, specialization);
   try {
     const result = await model.generateContent(prompt);
     const response = result.response;

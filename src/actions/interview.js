@@ -1,14 +1,16 @@
 "use server";
 
 import { Assessment } from "@/models/Models";
-import { getAuthenticatedUser } from "./auth";
-import { generateQuizPrompt, improvementPrompts } from "@/lib/prompts";
+import { getAuthUser } from "./auth";
+import { generateQuizPrompt, improvementPrompts, voiceInterviewPrompt } from "@/lib/prompts";
 import { model } from "./genAI";
+import { redirect } from "next/navigation";
 
 export async function generateQuiz() {
-    const { success, error, user } = await getAuthenticatedUser();
-    if (!success) return { error };
-    const prompt = generateQuizPrompt(user);
+    const { success, specialization, experience, skills } = await getAuthUser();
+    if (!success) return null;
+    if (!specialization) redirect("/onboarding");
+    const prompt = generateQuizPrompt(skills, experience, specialization);
     try {
         const result = await model.generateContent(prompt);
         const text = result.response.text().replace(/```(?:json)?\n?/g, "").trim();
@@ -26,8 +28,9 @@ export async function generateQuiz() {
 }
 
 export async function saveQuizResult(questions, answers, score) {
-    const { success, error, user } = await getAuthenticatedUser();
-    if (!success) return { error };
+    const { success, specialization, id } = await getAuthUser();
+    if (!success) return null;
+    if (!specialization) redirect("/onboarding");
     const questionResults = questions.map((q, index) => ({
         question: q.question,
         answer: q.correctAnswer,
@@ -37,12 +40,14 @@ export async function saveQuizResult(questions, answers, score) {
     }));
     const wrongAnswers = questionResults.filter((q) => !q.isCorrect);
     let improvementTip = null;
-    if (wrongAnswers.length > 0 && wrongAnswers.length <= 5) {
+    const quesCount = process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS;
+    const flooredVal = Math.floor(quesCount / 3);
+    if (wrongAnswers.length > 0 && wrongAnswers.length <= flooredVal) {
         const wrongQuestionsText = wrongAnswers.map((q) =>
             `Question: "${q.question}"\nCorrect: "${q.answer}"\nYour Answer: "${q.userAnswer}"`
         ).join("\n\n");
 
-        const prompt = improvementPrompts(user, wrongQuestionsText);
+        const prompt = improvementPrompts(specialization, wrongQuestionsText);
         try {
             const tipResult = await model.generateContent(prompt);
             improvementTip = tipResult.response.text().trim();
@@ -52,13 +57,12 @@ export async function saveQuizResult(questions, answers, score) {
     }
     try {
         await Assessment.create({
-            userId: user._id,
+            userId: id,
             quizScore: score,
             questions: questionResults,
             category: "Technical",
             improvementTip,
         });
-        // return assessment.toObject();
     } catch (err) {
         console.error("Error saving quiz result:", err);
         return { error: "Failed to save result: " + err.message };
@@ -66,44 +70,42 @@ export async function saveQuizResult(questions, answers, score) {
 }
 
 export async function getAssessments(page = 0, limit = 10) {
-    const { success, error, user } = await getAuthenticatedUser();
-    if (!success) return { error };
+    const { success, id, specialization } = await getAuthUser();
     try {
-        const assessments = await Assessment.find({ userId: user._id })
+        if (!success) return null;
+        if (!specialization) redirect("/onboarding");
+        const assessments = await Assessment.find({ userId: id })
             .sort({ createdAt: "asc" })
             .limit(limit)
             .skip(page * limit);
-        return assessments.map((a) => ({
-            _id: a._id.toString(),
-            userId: a.userId.toString(),
-            quizScore: a.quizScore,
-            questions: a.questions,
-            category: a.category,
-            improvementTip: a.improvementTip,
-            createdAt: a.createdAt.toISOString(),
-            updatedAt: a.updatedAt.toISOString(),
-        }));
-    } catch (err) {
-        console.error("Error fetching assessments:", err);
-        return { error: "Failed to fetch: " + err.message };
+        return assessments.map(formatAssessment);
+    } catch (error) {
+        console.error("Error fetching assessments:", error);
+        return { error: `Failed to fetch assessments: ${error.message || error}` };
     }
 }
 
+function formatAssessment(assessment) {
+    return {
+        quizScore: assessment.quizScore,
+        questions: assessment.questions,
+        category: assessment.category,
+        improvementTip: assessment.improvementTip,
+        createdAt: assessment.createdAt.toISOString(),
+        updatedAt: assessment.updatedAt.toISOString(),
+    };
+}
+
 export async function voiceInterviewQue() {
-    const { success, error, user } = await getAuthenticatedUser();
-    if (!success) {
-        return { error };
-    }
-    const voiceInterviewPrompt = `
-    Job position: ${user.specialization}, Skills: ${user.skills}, Years of Experience : ${user.experience} , Depends on Job Position, skills the candidate & Years of Experience give us 5 Interview question along with Answer in JSON format, Give us question and answer field on JSON
-  `;
+    const { success, experience, skills, specialization } = await getAuthUser();
+    if (!success) return null;
+    const count = process.env.NEXT_PUBLIC_NUMBER_OF_VOICE_QUESTIONS;
+    const voicePrompt = voiceInterviewPrompt(skills, count, specialization, experience, "mixed")
     try {
-        const result = await model.generateContent(voiceInterviewPrompt);
-        const response = result.response;
-        const text = response.text();
-        const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
-        const voiceQuestions = JSON.parse(cleanedText);
-        return cleanedText;
+        const result = await model.generateContent(voicePrompt);
+        const response = result.response.text();
+        const questions = JSON.parse(response);
+        return questions;
     } catch (err) {
         console.error("Error generating voice interview questions", err);
         return { error: "Failed to generate voice interview questions" + err.message };
