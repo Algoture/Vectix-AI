@@ -74,3 +74,4 @@ npm run dev
 Visit http://localhost:3000 in your browser.
 ## 📌 Notes
 ### Ensure microphone and camera permissions are granted for the Live Voice Interview feature.
+this is the end.
