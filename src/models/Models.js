@@ -32,8 +32,14 @@ const ResumeSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
 });
 
+const VoiceQueSchema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    questions: [{ type: String }]
+})
+
 const User = mongoose.models?.User || mongoose.model("User", UserSchema);
 const Assessment = mongoose.models?.Assessment || mongoose.model("Assessment", AssessmentSchema);
 const Resume = mongoose.models?.Resume || mongoose.model("Resume", ResumeSchema);
+const VoiceQue = mongoose.models?.VoiceQue || mongoose.model("VoiceQue", VoiceQueSchema);
 
-export { User, Assessment, Resume};
+export { User, Assessment, Resume, VoiceQue };
