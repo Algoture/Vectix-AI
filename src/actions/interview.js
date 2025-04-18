@@ -1,10 +1,11 @@
 "use server";
 
-import { Assessment } from "@/models/Models";
+import { Assessment, VoiceQue } from "@/models/Models";
 import { getAuthUser } from "./auth";
 import { generateQuizPrompt, improvementPrompts, voiceInterviewPrompt } from "@/lib/prompts";
 import { model } from "./genAI";
 import { redirect } from "next/navigation";
+import { connectDB } from "@/lib/db";
 
 export async function generateQuiz() {
     const { success, specialization, experience, skills } = await getAuthUser();
@@ -96,19 +97,36 @@ function formatAssessment(assessment) {
     };
 }
 
-export async function voiceInterviewQue() {
-    const { success, experience, skills, specialization } = await getAuthUser();
+export async function genAndSaveInterviewQues() {
+    const { success, experience, skills, specialization, id } = await getAuthUser();
     if (!success) return null;
     const count = process.env.NEXT_PUBLIC_NUMBER_OF_VOICE_QUESTIONS;
     const voicePrompt = voiceInterviewPrompt(skills, count, specialization, experience, "mixed")
     try {
+        await connectDB();
         const result = await model.generateContent(voicePrompt);
         const response = result.response.text();
-        const questions = JSON.parse(response);
-        return questions;
+        const cleanedText = response.replace(/```(?:json)?\n?/g, "").trim();
+        const questions = JSON.parse(cleanedText);
+        await VoiceQue.create({
+            userId: id,
+            questions: questions
+        })
     } catch (err) {
         console.error("Error generating voice interview questions", err);
         return { error: "Failed to generate voice interview questions" + err.message };
     }
+}
 
+export async function getVoiceQuestions() {
+    const { id, success } = await getAuthUser();
+    if (!success) return null;
+    try {
+        await connectDB();
+        const fetched = await VoiceQue.find({ userId: id });
+        return fetched[0].questions;
+    } catch (err) {
+        console.error("Error fetching Voice Interview Questions");
+        return null;
+    }
 }
