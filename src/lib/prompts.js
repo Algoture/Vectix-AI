@@ -1,3 +1,5 @@
+import { randomFlavor } from "@/data/randomPrompts";
+
 export function generateQuizPrompt(skills, experience, specialization) {
   const prompt = `
         Generate ${process.env.NEXT_PUBLIC_NUMBER_OF_QUESTIONS} technical interview questions for a ${specialization}
@@ -53,19 +55,21 @@ export function improveResumePrompt(type, current, industry) {
   return prompt;
 }
 
-export function voiceInterviewPrompt(skills, quesCount, specialization, experience, type) {
+export function voiceInterviewPrompt(skills, quesCount, specialization, experience, type, seed = null) {
+  const variation = seed || randomFlavor[Math.floor(Math.random() * randomFlavor.length)];
   const prompt = `Prepare questions for a job interview.
         The job role is ${specialization}.
         The job experience level is ${experience} years.
         The tech stack used in the job is: ${skills}.
         The focus between behavioural and technical questions should lean towards: ${type}.
         The amount of questions required is: ${quesCount}.
+        ${variation}
         Please return only the questions, without any additional text.
         The questions are going to be read by a voice assistant so do not use "/" or "*" or any other special characters which might break the voice assistant.
         Return the questions formatted like this:
         ["Question 1", "Question 2", "Question 3"]
-        
+
         Thank you! <3
-    `
+    `;
   return prompt;
 }

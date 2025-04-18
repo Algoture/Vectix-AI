@@ -117,13 +117,14 @@ export async function genAndSaveInterviewQues() {
         return { error: "Failed to generate voice interview questions" + err.message };
     }
 }
+
 export async function getVoiceQuestions() {
     const { id, success } = await getAuthUser();
     if (!success) return null;
     try {
         await connectDB();
-        const fetched = await VoiceQue.findOne({ userId: id });
-        return fetched.questions;
+        const fetched = await VoiceQue.find({ userId: id });
+        return fetched[0].questions;
     } catch (err) {
         console.error("Error fetching Voice Interview Questions");
         return null;
